@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "712170349714",
+    "firebase_url": "https://family-tracker-24c11.firebaseio.com",
+    "project_id": "family-tracker-24c11",
+    "storage_bucket": "family-tracker-24c11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712170349714:android:45042e5033264be1",
+        "android_client_info": {
+          "package_name": "com.example.mjhundekar.family_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712170349714-hsojg0c004hsk5uprn06oqkcnmehuq0d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mjhundekar.family_tracker",
+            "certificate_hash": "6D529865D22BC098DA8EAB8AA68D662C0CBDE019"
+          }
+        },
+        {
+          "client_id": "712170349714-h00rvbdd7bt6gko8dt74i2gl1iqg5pbm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKbT1-dVtmO2eY6qGRgsblxKc5k2ySrrI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712170349714-h00rvbdd7bt6gko8dt74i2gl1iqg5pbm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
