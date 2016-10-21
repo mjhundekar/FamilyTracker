@@ -17,7 +17,21 @@ android {
         }
     }
     productFlavors {
+
+        // Build variant with minSdk 16 to include Facebook and FirebaseUI libraries.
+        minSdkJellybean {
+            minSdkVersion 16
+        }
+
+        // Build variant with minSdk 9, excludes Facebook and FirebaseUI libraries.
+        minSdkGingerbread {
+            minSdkVersion 9
+        }
     }
+}
+
+configurations.all {
+    resolutionStrategy.force 'com.android.support:support-annotations:24.2.1'
 }
 
 dependencies {
@@ -26,12 +40,36 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     wearApp project(':wear')
+
+    // Google Sign In SDK (only required for Google Sign In)
     compile 'com.google.android.gms:play-services:9.6.1'
+    // Firebase Authentication
     compile 'com.google.firebase:firebase-auth:9.6.1'
-    compile 'com.google.android.gms:play-services-auth:9.6.1'
-    compile 'com.google.firebase:firebase-auth:9.6.1'
+
+    // Firebase UI
+    // Used in FirebaseUIActivity. The FirebaseUI-Android library has a minSdk level of 16
+    // so this library is only included in the minSdkJellybean variant.
+    minSdkJellybeanCompile 'com.firebaseui:firebase-ui-auth:0.6.0'
+
+    // Facebook Android SDK (only required for Facebook Login)
+    // Used in FacebookLoginActivity. This is only compiled into the minSdkJellybean variant of this
+    // app. You can build a 'minSdkGingerbread' variant to test on devices with 9 <= SDK <= 15.
+    minSdkJellybeanCompile 'com.facebook.android:facebook-android-sdk:4.9.0'
+
+    // Twitter Android SDK (only required for Twitter Login)
+    compile('com.twitter.sdk.android:twitter-core:1.6.6@aar') {
+        transitive = true
+    }
+    compile('com.twitter.sdk.android:twitter:1.13.1@aar') {
+        transitive = true;
+    }
+
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
+
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'
