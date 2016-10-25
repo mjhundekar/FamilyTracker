@@ -178,7 +178,7 @@ public class GoogleSignIn extends LoginActivity implements
     }
     // [END signin]
 
-    private void signOut() {
+    public void signOut() {
         // Firebase sign out
         mAuth.signOut();
 
@@ -213,7 +213,7 @@ public class GoogleSignIn extends LoginActivity implements
             Log.v("Umang",user.getDisplayName());
             //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             //mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-            Intent intent1 = new Intent(GoogleSignIn.this, test.class);
+            Intent intent1 = new Intent(GoogleSignIn.this, HomeActivity.class);
             startActivity(intent1);
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
