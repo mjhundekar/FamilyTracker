@@ -59,4 +59,5 @@
     <string name="id_fmt">User ID: %s</string>
     <string name="email_fmt">Email: %s</string>
     <string name="title_activity_email_password">EmailPassword</string>
+    <string name="title_activity_test">test</string>
 </resources>
