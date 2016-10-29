@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,GoogleMap.OnMyLocationButtonClickListener,
@@ -59,9 +60,10 @@ public class HomeActivity extends AppCompatActivity
     private boolean mPermissionDenied = false;
     String user_name = "";
     private GoogleMap mMap;
-    Geocoder geocoder;
     List<Address> addresses;
     Boolean flag = true;
+    private LocationFragment location_fragment;
+    private TextView user_address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +100,10 @@ public class HomeActivity extends AppCompatActivity
         //        .add(R.id.location_fragment, new LocationFragment(),"LocationFragment")
         //        .commit();
 
-        LocationFragment location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
+        location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
         ((TextView) location_fragment.getView().findViewById(R.id.user_name)).setText(user_name);
 
+        user_address = ((TextView) location_fragment.getView().findViewById(R.id.user_location));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -205,6 +208,27 @@ public class HomeActivity extends AppCompatActivity
         @Override
         public void onMyLocationChange(Location location) {
             mMap.clear();
+            Log.v("geocoder",location.getLatitude()+"");
+            try {
+                Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.ENGLISH);
+                List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 1);
+
+                if(addresses != null) {
+                    Address returnedAddress = addresses.get(0);
+                    StringBuilder strReturnedAddress = new StringBuilder();
+                    for(int i=0; i<returnedAddress.getMaxAddressLineIndex(); i++) {
+                        strReturnedAddress.append(returnedAddress.getAddressLine(i)).append(",");
+                    }
+                    user_address.setText(strReturnedAddress.toString());
+                }
+                else{
+                    user_address.setText("No Address returned!");
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                user_address.setText("Canont get Address!");
+            }
 
             MarkerOptions mp = new MarkerOptions();
 
