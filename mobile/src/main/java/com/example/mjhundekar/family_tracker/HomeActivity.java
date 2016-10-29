@@ -53,6 +53,15 @@ public class HomeActivity extends AppCompatActivity
         email_id.setText(email);
         System.out.println("url------->"+photo);
 
+        //getSupportFragmentManager().findFragmentById(R.id.location_fragment);
+        //getSupportFragmentManager().beginTransaction()
+        //        .add(R.id.location_fragment, new LocationFragment(),"LocationFragment")
+        //        .commit();
+
+        LocationFragment location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
+        ((TextView) location_fragment.getView().findViewById(R.id.user_name)).setText(user_name);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -73,6 +82,8 @@ public class HomeActivity extends AppCompatActivity
         //NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         new DownloadImageTask(image)
+                .execute(photo);
+        new DownloadImageTask(((ImageView) location_fragment.getView().findViewById(R.id.user_photo)))
                 .execute(photo);
     }
 
