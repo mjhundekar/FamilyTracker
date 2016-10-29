@@ -7,6 +7,34 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <fragment
+            android:id="@+id/map_fragment"
+            android:name="com.example.mjhundekar.family_tracker.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_map" />
+
+        <fragment
+            android:id="@+id/location_fragment"
+            android:name="com.example.mjhundekar.family_tracker.LocationFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="400dp"
+            tools:layout="@layout/fragment_location"/>
+
+        <!--
+        <fragment
+            android:id="@+id/location_fragment"
+            android:name="com.example.mjhundekar.family_tracker.LocationFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_map" /> -->
+
+    </FrameLayout>
 
     <include
         layout="@layout/app_bar_home"

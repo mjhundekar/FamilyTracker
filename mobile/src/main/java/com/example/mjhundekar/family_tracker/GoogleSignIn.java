@@ -50,6 +50,7 @@ public class GoogleSignIn extends LoginActivity implements
     private TextView mStatusTextView;
     private TextView mDetailTextView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,10 +211,16 @@ public class GoogleSignIn extends LoginActivity implements
         hideProgressDialog();
         if (user != null) {
             Log.v("Umang", user.getEmail());
-            Log.v("Umang",user.getDisplayName());
+            Log.v("Umang", String.valueOf(user.getPhotoUrl()));
+
             //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             //mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+
+
             Intent intent1 = new Intent(GoogleSignIn.this, HomeActivity.class);
+            intent1.putExtra("email", user.getEmail());
+            intent1.putExtra("name",user.getDisplayName());
+            intent1.putExtra("photo",String.valueOf(user.getPhotoUrl()));
             startActivity(intent1);
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
