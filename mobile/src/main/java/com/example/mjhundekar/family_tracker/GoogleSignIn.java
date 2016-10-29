@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -219,7 +219,7 @@ public class GoogleSignIn extends LoginActivity implements
 
             Intent intent1 = new Intent(GoogleSignIn.this, HomeActivity.class);
             intent1.putExtra("email", user.getEmail());
-            intent1.putExtra("name",user.getDisplayName());
+            intent1.putExtra("name",user.getDisplayName().toUpperCase());
             intent1.putExtra("photo",String.valueOf(user.getPhotoUrl()));
             startActivity(intent1);
 

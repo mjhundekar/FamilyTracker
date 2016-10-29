@@ -1,8 +1,25 @@
+<!--<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
+</LinearLayout>
+
+-->
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:layout_alignParentBottom="true"
     android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
     android:orientation="vertical" >
 
 
@@ -11,28 +28,31 @@
         android:layout_height="50dp"
         android:orientation="horizontal" >
         <ImageView
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:id="@+id/user_photo"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.2"/>
+            android:layout_width="75dp"
+            android:layout_height="match_parent"/>
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="0.8">
+            android:orientation="vertical">
 
             <TextView
+                android:paddingLeft="6dp"
+                android:textSize="20sp"
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
 
                 android:text="Saif"/>
             <TextView
-                android:id="@+id/location"
+                android:id="@+id/user_location"
+                android:paddingLeft="6dp"
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
-
-                android:text="720 W, 27th Street Los Angeles, California"/>
+                android:paddingTop="5dp"
+                android:text="Mardi Gras"/>
 
         </LinearLayout>
 
@@ -44,5 +64,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
+    <!--
+    <ListView
+        android:id="@+id/location_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>-->
 
 </LinearLayout>

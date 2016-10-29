@@ -27,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,6 +71,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
         Bundle bundle = getIntent().getExtras();
 
         String email = bundle.getString("email");
@@ -100,7 +103,7 @@ public class HomeActivity extends AppCompatActivity
         //        .add(R.id.location_fragment, new LocationFragment(),"LocationFragment")
         //        .commit();
 
-        location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
+
         ((TextView) location_fragment.getView().findViewById(R.id.user_name)).setText(user_name);
 
         user_address = ((TextView) location_fragment.getView().findViewById(R.id.user_location));
@@ -129,6 +132,8 @@ public class HomeActivity extends AppCompatActivity
         new DownloadImageTask(((ImageView) location_fragment.getView().findViewById(R.id.user_photo)))
                 .execute(photo);
     }
+
+
 
     @Override
     public void onBackPressed() {

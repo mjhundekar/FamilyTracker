@@ -8,18 +8,16 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        android:text="Group Activity"/>
+
     <include
         layout="@layout/app_bar_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-        <!--
-        <fragment
-            android:id="@+id/location_fragment"
-            android:name="com.example.mjhundekar.family_tracker.LocationFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_map" /> -->
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
