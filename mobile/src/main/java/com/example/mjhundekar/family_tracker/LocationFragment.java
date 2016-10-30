@@ -1,9 +1,14 @@
 package com.example.mjhundekar.family_tracker;
 
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
@@ -12,8 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -34,6 +43,10 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
     HashMap<Integer,String> hashMap = new HashMap<>();
     MyAdapter adapter;
     private List<FriendBO> friends;
+
+    public LocationFragment(){
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,32 +83,58 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
+    public void onItemClick(AdapterView<?> parent, View view, final int position,
                             long id) {
-        String loc = hashMap.get(position);
-        String message = "";
-        Geocoder geocoder = new Geocoder(getContext(), Locale.ENGLISH);
-        try {
-            List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(loc.split(",")[0]),
-                    Double.parseDouble(loc.split(",")[1]), 1);
-            if(addresses != null && addresses.size()!=0) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder();
-                for(int i=0; i<returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append(",");
-                }
-                strReturnedAddress.append(returnedAddress.getCountryName());
-                message = strReturnedAddress.toString();
-            }
-            else{
-                message = "No Address";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT)
-                .show();
 
+        final String loc = hashMap.get(position);
+        ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(getContext(),loc.split(",")[0],loc.split(",")[1]);
+        String address = convert.getAddress();
+
+        final Dialog dialog = new Dialog(getContext());
+        // Include dialog.xml file
+        dialog.setContentView(R.layout.dialog);
+        // Set dialog title
+        dialog.setTitle("Custom Dialog");
+        // set values for custom dialog components - text, image and button
+        dialog.show();
+
+        Button location_button = (Button) dialog.findViewById(R.id.LocationButton);
+        // if decline button is clicked, close the custom dialog
+        location_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                GoogleMap mMap = HomeActivity.mMap;
+                if(mMap != null){
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.parseDouble(loc.split(",")[0]), Double.parseDouble(loc.split(",")[1])), 16.0f));
+                }
+                // Close dialog
+
+            }
+        });
+
+        Button direction_button = (Button) dialog.findViewById(R.id.directionButton);
+        // if decline button is clicked, close the custom dialog
+        direction_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Location current_position = HomeActivity.updated_location;
+                dialog.dismiss();
+
+                String current_latitude = current_position.getLatitude()+"";
+                String current_longitude = current_position.getLongitude()+"";
+                String destination_latitude = loc.split(",")[0];
+                String destination_longitude = loc.split(",")[1];
+                Log.v("Location","https://maps.google.com?saddr=Current+Location" +
+                "&daddr="+destination_latitude+","+destination_longitude);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://maps.google.com?saddr=Current+Location" +
+                        "&daddr="+destination_latitude+","+destination_longitude));
+
+                startActivity(browserIntent);
+                //Close dialog
+
+            }
+        });
     }
 
     /*

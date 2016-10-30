@@ -65,25 +65,9 @@ public class MyAdapter extends BaseAdapter {
         imgIcon.setImageResource(row_pos.getIcon());
         friend_name.setText(row_pos.getFriend_name());
 
-        Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
-        try {
-            List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(row_pos.toString().split(",")[0]),
-                                                            Double.parseDouble(row_pos.toString().split(",")[1]), 1);
-            if(addresses != null && addresses.size()!=0) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder();
-                for(int i=0; i<returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append(",");
-                }
-                strReturnedAddress.append(returnedAddress.getCountryName());
-                friend_address.setText(strReturnedAddress.toString());
-            }
-            else{
-                friend_address.setText("No Address returned!");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(context,row_pos.toString().split(",")[0],row_pos.toString().split(",")[1]);
+        String address = convert.getAddress();
+        friend_address.setText(address);
 
         return convertView;
 

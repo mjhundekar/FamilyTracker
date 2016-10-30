@@ -62,7 +62,7 @@ public class HomeActivity extends AppCompatActivity
      */
     private boolean mPermissionDenied = false;
     String user_name = "";
-    private GoogleMap mMap;
+    static GoogleMap mMap;
     Boolean flag = true;
     private LocationFragment location_fragment;
     private TextView user_address;
@@ -71,17 +71,23 @@ public class HomeActivity extends AppCompatActivity
     String[] friend_address;
     private List<FriendBO> friends;
     Marker markerName;
+    static Location updated_location;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
         Bundle bundle = getIntent().getExtras();
 
         String email = bundle.getString("email");
+        //userBO.setEmail(email);
         user_name = bundle.getString("name");
+        //userBO.setUser_name(user_name);
         String photo = bundle.getString("photo");
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         //navigationView.setNavigationItemSelectedListener(this);
@@ -148,7 +154,6 @@ public class HomeActivity extends AppCompatActivity
 
             friends.add(items);
         }
-
     }
 
 
@@ -231,30 +236,14 @@ public class HomeActivity extends AppCompatActivity
         @Override
         public void onMyLocationChange(Location location) {
 
-            //Log.v("geocoder",location.getLatitude()+"");
+            updated_location = location;
             if(markerName != null){
                 markerName.remove();
             }
-            try {
-                Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.ENGLISH);
-                List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 1);
 
-                if(addresses != null) {
-                    Address returnedAddress = addresses.get(0);
-                    StringBuilder strReturnedAddress = new StringBuilder();
-                    for(int i=0; i<returnedAddress.getMaxAddressLineIndex(); i++) {
-                        strReturnedAddress.append(returnedAddress.getAddressLine(i)).append(",");
-                    }
-                    user_address.setText(strReturnedAddress.toString());
-                }
-                else{
-                    user_address.setText("No Address returned!");
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                user_address.setText("Canont get Address!");
-            }
+            ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(HomeActivity.this,location.getLatitude()+"",location.getLongitude()+"");
+            String address = convert.getAddress();
+            user_address.setText(address);
 
             markerName = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME"));
 
@@ -268,10 +257,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-
+        //userBO.setGmap(map);
         for (int j = 0;j<friends.size();j++){
 
             LatLng loc = friends.get(j).getLoc();
+            //userBO.setLoc(loc);
             Log.v("Inside",friends.get(j).toString());
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(loc.latitude, loc.longitude))
@@ -297,6 +287,8 @@ public class HomeActivity extends AppCompatActivity
             mMap.setMyLocationEnabled(true);
         }
     }
+
+
 
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
