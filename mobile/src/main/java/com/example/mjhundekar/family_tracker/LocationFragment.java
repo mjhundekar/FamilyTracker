@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import static android.content.Context.TELEPHONY_SERVICE;
 
 
 /**
@@ -135,6 +138,23 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
 
             }
         });
+        /*
+        Button message_button = (Button) dialog.findViewById(R.id.MessageButton);
+        // if decline button is clicked, close the custom dialog
+        direction_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendSMSMessage();
+                //Close dialog
+
+            }
+
+            private void sendSMSMessage() {
+                TelephonyManager tm = (TelephonyManager) getContext().getSystemService(TELEPHONY_SERVICE);
+                String Telephone_Number = tm.getLine1Number();
+
+            }
+        });*/
     }
 
     /*
