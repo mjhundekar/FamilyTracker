@@ -7,7 +7,7 @@
     <ImageView
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:id="@+id/icon"
+        android:id="@+id/list_friend_image"
         android:layout_width="75dp"
         android:layout_height="50dp"/>
     <LinearLayout
@@ -18,12 +18,12 @@
         <TextView
             android:paddingLeft="6dp"
             android:textSize="20sp"
-            android:id="@+id/title"
+            android:id="@+id/list_friend_name"
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:text="Saif"/>
         <TextView
-            android:id="@+id/user_location"
+            android:id="@+id/list_friend_address"
             android:paddingLeft="6dp"
             android:layout_width="match_parent"
             android:layout_height="25dp"

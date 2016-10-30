@@ -76,13 +76,22 @@
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \\\'my location\\\' feature, which shows your current location on the map.</string>
     <string name="location_permission_denied"><![CDATA[This sample requires location permission to enable the \\\'my location\\\' layer. Please try again and grant access to use the location.\\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \\\'Google Maps API Demos\\\'.]]></string>
 
-    <string-array name="titles">
-        <item>Home</item>
-        <item>Tutorials</item>
-        <item>My Apps</item>
-        <item>OS Versions</item>
-        <item>Tools</item>
-        <item>About Us</item>
+    <string-array name="friend_names">
+        <item>Saif</item>
+        <item>Junaid</item>
+        <item>Nishant</item>
+        <item>Anish</item>
+        <item>Sagar</item>
+        <item>Umang</item>
+    </string-array>
+
+    <string-array name="friend_addresses">
+        <item>18792 Pioneer Blvd, Artesia, CA 90701</item>
+        <item>3911 S Figueroa St, Los Angeles, CA 90037</item>
+        <item>San Francisco, CA</item>
+        <item>Los Angeles, CA 90068</item>
+        <item>1119 W 29th St, Los Angeles, CA 90007</item>
+        <item>325 W Adams Blvd, Los Angeles, CA 90007</item>
     </string-array>
 
     <array name="icons">

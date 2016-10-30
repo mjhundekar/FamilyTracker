@@ -3,14 +3,12 @@ package com.example.mjhundekar.family_tracker;
 
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,11 +20,12 @@ import java.util.List;
  */
 public class LocationFragment extends ListFragment implements AdapterView.OnItemClickListener {
 
-    String[] menutitles;
+    String[] friend_name;
     TypedArray menuIcons;
+    String[] friend_address;
 
     MyAdapter adapter;
-    private List<RowItem> rowItems;
+    private List<FriendBO> friends;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,19 +39,19 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
 
         super.onActivityCreated(savedInstanceState);
 
-        menutitles = getResources().getStringArray(R.array.titles);
+        friend_name = getResources().getStringArray(R.array.friend_names);
         menuIcons = getResources().obtainTypedArray(R.array.icons);
+        friend_address = getResources().getStringArray(R.array.friend_addresses);
+        friends = new ArrayList<FriendBO>();
 
-        rowItems = new ArrayList<RowItem>();
+        for (int i = 0; i < friend_name.length; i++) {
+            FriendBO items = new FriendBO(friend_name[i], menuIcons.getResourceId(
+                    i, -1),friend_address[i]);
 
-        for (int i = 0; i < menutitles.length; i++) {
-            RowItem items = new RowItem(menutitles[i], menuIcons.getResourceId(
-                    i, -1));
-
-            rowItems.add(items);
+            friends.add(items);
         }
 
-        adapter = new MyAdapter(getActivity(), rowItems);
+        adapter = new MyAdapter(getActivity(), friends);
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
 
@@ -62,7 +61,7 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
 
-        Toast.makeText(getActivity(), menutitles[position], Toast.LENGTH_SHORT)
+        Toast.makeText(getActivity(), friend_address[position], Toast.LENGTH_SHORT)
                 .show();
 
     }
