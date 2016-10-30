@@ -4,6 +4,7 @@ import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -62,10 +63,14 @@ public class HomeActivity extends AppCompatActivity
     private boolean mPermissionDenied = false;
     String user_name = "";
     private GoogleMap mMap;
-    List<Address> addresses;
     Boolean flag = true;
     private LocationFragment location_fragment;
     private TextView user_address;
+    String[] friend_name;
+    TypedArray menuIcons;
+    String[] friend_address;
+    private List<FriendBO> friends;
+    Marker markerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +136,19 @@ public class HomeActivity extends AppCompatActivity
                 .execute(photo);
         new DownloadImageTask(((ImageView) location_fragment.getView().findViewById(R.id.user_photo)))
                 .execute(photo);
+
+        friend_name = getResources().getStringArray(R.array.friend_names);
+        menuIcons = getResources().obtainTypedArray(R.array.icons);
+        friend_address = getResources().getStringArray(R.array.friend_addresses);
+        friends = new ArrayList<FriendBO>();
+        for (int i = 0; i < friend_name.length; i++) {
+            String[] location = friend_address[i].split(",");
+            FriendBO items = new FriendBO(friend_name[i], menuIcons.getResourceId(
+                    i, -1),new LatLng(Double.parseDouble(location[0]),Double.parseDouble(location[1])));
+
+            friends.add(items);
+        }
+
     }
 
 
@@ -212,8 +230,11 @@ public class HomeActivity extends AppCompatActivity
     private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location location) {
-            mMap.clear();
-            Log.v("geocoder",location.getLatitude()+"");
+
+            //Log.v("geocoder",location.getLatitude()+"");
+            if(markerName != null){
+                markerName.remove();
+            }
             try {
                 Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.ENGLISH);
                 List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 1);
@@ -235,13 +256,8 @@ public class HomeActivity extends AppCompatActivity
                 user_address.setText("Canont get Address!");
             }
 
-            MarkerOptions mp = new MarkerOptions();
+            markerName = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME"));
 
-            mp.position(new LatLng(location.getLatitude(), location.getLongitude()));
-
-            mp.title("Me");
-
-            mMap.addMarker(mp);
             if(mMap != null && flag){
                 flag = false;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
@@ -253,9 +269,20 @@ public class HomeActivity extends AppCompatActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
 
+        for (int j = 0;j<friends.size();j++){
+
+            LatLng loc = friends.get(j).getLoc();
+            Log.v("Inside",friends.get(j).toString());
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(loc.latitude, loc.longitude))
+                    .title(friends.get(j).getFriend_name()));
+        }
         mMap.setOnMyLocationButtonClickListener(this);
+
         mMap.setOnMyLocationChangeListener(myLocationChangeListener);
         enableMyLocation();
+
+
 
     }
 

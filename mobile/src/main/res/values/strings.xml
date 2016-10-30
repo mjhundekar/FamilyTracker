@@ -86,12 +86,12 @@
     </string-array>
 
     <string-array name="friend_addresses">
-        <item>18792 Pioneer Blvd, Artesia, CA 90701</item>
-        <item>3911 S Figueroa St, Los Angeles, CA 90037</item>
-        <item>San Francisco, CA</item>
-        <item>Los Angeles, CA 90068</item>
-        <item>1119 W 29th St, Los Angeles, CA 90007</item>
-        <item>325 W Adams Blvd, Los Angeles, CA 90007</item>
+        <item>33.860483, -118.081525</item>
+        <item>34.013066, -118.284518</item>
+        <item>37.762649, -122.442561</item>
+        <item>32.767384, -117.185779</item>
+        <item>32.850349, -116.917644</item>
+        <item>33.857480, -115.915142</item>
     </string-array>
 
     <array name="icons">
