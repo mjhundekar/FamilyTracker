@@ -27,7 +27,7 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:id="@+id/frameLayout">
 
-            <fragment
+        <fragment
                 android:id="@+id/map_fragment"
                 class="com.google.android.gms.maps.SupportMapFragment"
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -43,6 +43,27 @@
                 android:layout_height="160dp"
                 android:layout_gravity="bottom"
                 tools:layout="@layout/fragment_location"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="create"
+                android:id="@+id/add_geofences_button"
+                android:onClick="addGeofencesButtonHandler"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="remove"
+                android:layout_toRightOf="@+id/add_geofences_button"
+                android:onClick="removeGeofencesButtonHandler"
+                android:id="@+id/remove_geofences_button"/>
+        </RelativeLayout>
 
     </FrameLayout>
 
