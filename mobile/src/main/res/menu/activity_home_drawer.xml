@@ -2,35 +2,39 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/group"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Group" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+        <item android:title="Groups">
+            <menu>
+                <item
+                    android:id="@+id/create_geofence"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Create Geofence" />
+                <item
+                    android:id="@+id/view_geofence"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="View Geofence" />
+            </menu>
+        </item>
     </group>
-
-    <item android:title="Communicate">
+    <group android:checkableBehavior="single">
+    <item android:title="GeoFences">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/create_group"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="Create a group" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/view_group"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="View Groups" />
         </menu>
     </item>
+    </group>
+    <group>
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_menu_share"
+            android:title="Logout" />
+    </group>
+
 
 </menu>

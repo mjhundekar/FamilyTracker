@@ -221,6 +221,10 @@ public class GoogleSignIn extends LoginActivity implements
             intent1.putExtra("email", user.getEmail());
             intent1.putExtra("name",user.getDisplayName().toUpperCase());
             intent1.putExtra("photo",String.valueOf(user.getPhotoUrl()));
+            mGoogleApiClient.connect();
+            boolean a = mGoogleApiClient.isConnected();
+
+            Toast.makeText(this, a+" In Google Sign In", Toast.LENGTH_SHORT).show();
             startActivity(intent1);
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
