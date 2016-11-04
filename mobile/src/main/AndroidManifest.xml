@@ -58,6 +58,7 @@
         <activity android:name=".GroupActivity">
 
         </activity>
+        <service android:name=".GeofenceTransitionsIntentService" />
     </application>
 
 </manifest>
