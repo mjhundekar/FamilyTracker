@@ -14,15 +14,12 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBKPwblyiGyrEuJoZxk910fd5tVTXIt9Ag" />
@@ -55,10 +52,11 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".GroupActivity">
 
-        </activity>
         <service android:name=".GeofenceTransitionsIntentService" />
+
+        <activity android:name=".GroupsActivity" />
+        <activity android:name=".EditGroupsActivity"></activity>
     </application>
 
 </manifest>

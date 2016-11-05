@@ -2,7 +2,9 @@ package com.example.mjhundekar.family_tracker;
 
 import android.*;
 import android.Manifest;
+import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -22,6 +24,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -32,6 +35,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -61,6 +66,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -83,13 +89,14 @@ public class HomeActivity extends AppCompatActivity
     Boolean flag = true;
     private LocationFragment location_fragment;
     private TextView user_address;
-    String[] friend_name;
+    static String[] friend_name;
     TypedArray menuIcons;
     String[] friend_address;
     private List<FriendBO> friends;
     Marker markerName;
     static Location updated_location;
     protected static final String TAG = "HomeActivity";
+    ListView listViewGroup = null;
 
 
     /**
@@ -146,6 +153,8 @@ public class HomeActivity extends AppCompatActivity
         setButtonsEnabledState();
 
         // Get the geofences used. Geofence data is hard coded in this sample.
+        listViewGroup = new ListView(this);
+
 
 
         location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
@@ -406,12 +415,67 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.group) {
-            Intent intent = new Intent(HomeActivity.this,GroupActivity.class);
+            Intent intent = new Intent(HomeActivity.this,GroupsActivity.class);
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-
+            Intent intent = new Intent(HomeActivity.this,EditGroupsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
+            HashMap<String, ArrayList<String>> group_list = GroupBO.group_list;
+            String group_names[] = new String[group_list.size()];
+            int counter = 0;
+            for ( String key : group_list.keySet() ) {
+                group_names[counter] = key;
+            }
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(HomeActivity.this);
+
+            builderSingle.setTitle("Select One Name:-");
+
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                    HomeActivity.this,
+                    android.R.layout.select_dialog_singlechoice);
+            arrayAdapter.add("Hardik");
+            arrayAdapter.add("Archit");
+            arrayAdapter.add("Jignesh");
+            arrayAdapter.add("Umang");
+            arrayAdapter.add("Gatti");
+
+            builderSingle.setNegativeButton(
+                    "cancel",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+            builderSingle.setAdapter(
+                    arrayAdapter,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String strName = arrayAdapter.getItem(which);
+                            AlertDialog.Builder builderInner = new AlertDialog.Builder(
+                                    HomeActivity.this);
+                            builderInner.setMessage(strName);
+                            builderInner.setTitle("Your Selected Item is");
+                            builderInner.setPositiveButton(
+                                    "Ok",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(
+                                                DialogInterface dialog,
+                                                int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            builderInner.show();
+                        }
+                    });
+            builderSingle.show();
+
+
 
         } else if (id == R.id.nav_manage) {
 
