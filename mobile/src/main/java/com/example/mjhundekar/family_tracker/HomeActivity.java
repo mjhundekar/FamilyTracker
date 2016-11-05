@@ -39,6 +39,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -125,8 +126,6 @@ public class HomeActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,7 +152,7 @@ public class HomeActivity extends AppCompatActivity
         setButtonsEnabledState();
 
         // Get the geofences used. Geofence data is hard coded in this sample.
-        listViewGroup = new ListView(this);
+
 
 
 
@@ -176,6 +175,9 @@ public class HomeActivity extends AppCompatActivity
         TextView email_id = (TextView)header.findViewById(R.id.email);
         name.setText(user_name);
         email_id.setText(email);
+
+
+
         System.out.println("url------->"+photo);
         //------------------MAP CODE-----------------
         SupportMapFragment mapFragment =
@@ -422,12 +424,7 @@ public class HomeActivity extends AppCompatActivity
             Intent intent = new Intent(HomeActivity.this,EditGroupsActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
-            HashMap<String, ArrayList<String>> group_list = GroupBO.group_list;
-            String group_names[] = new String[group_list.size()];
-            int counter = 0;
-            for ( String key : group_list.keySet() ) {
-                group_names[counter] = key;
-            }
+
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(HomeActivity.this);
 
             builderSingle.setTitle("Select One Name:-");
@@ -435,11 +432,14 @@ public class HomeActivity extends AppCompatActivity
             final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                     HomeActivity.this,
                     android.R.layout.select_dialog_singlechoice);
-            arrayAdapter.add("Hardik");
-            arrayAdapter.add("Archit");
-            arrayAdapter.add("Jignesh");
-            arrayAdapter.add("Umang");
-            arrayAdapter.add("Gatti");
+
+            Log.v("Hashmap in Home",GroupsActivity.groups.size()+"");
+            if(GroupsActivity.groups.size()>0) {
+                for (String key : GroupsActivity.groups.keySet()) {
+                    arrayAdapter.add(key);
+                }
+            }
+
 
             builderSingle.setNegativeButton(
                     "cancel",
