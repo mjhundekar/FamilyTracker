@@ -27,8 +27,7 @@ public class GroupsActivity extends Activity {
     AutoCompleteTextView text;
     MultiAutoCompleteTextView text1;
     HashMap<Integer,String> friends_map = new HashMap<Integer, String>();
-    HashMap<String,ArrayList<String>> groups = new HashMap<>();
-    GroupBO groupBO = new GroupBO();
+    static HashMap<String,ArrayList<String>> groups = new HashMap<>();
     EditText group_name;
 
     @Override
@@ -65,15 +64,18 @@ public class GroupsActivity extends Activity {
         String members[] = text1.getText().toString().split(", ");
         ArrayList<String> member = new ArrayList<>();
         for(String m : members){
-            member.add(m);
+            if(!m.equals(""))
+                member.add(m);
         }
         group_name = (EditText) findViewById(R.id.group_name);
-        //groups.put(group_name.getText().toString(),member);
-        HashMap<String,ArrayList<String>> existing_group = GroupBO.getGroup_list();
+        groups.put(group_name.getText().toString(),member);
+        Log.v("Hashmap in Group",groups.size()+"");
+        /*HashMap<String,ArrayList<String>> existing_group = GroupBO.getGroup_list();
         existing_group.put(group_name.getText().toString(),member);
-        groupBO.setGroup_list(existing_group);
-        Intent intent  = new Intent(GroupsActivity.this,HomeActivity.class);
-        startActivity(intent);
+        groupBO.setGroup_list(existing_group);*/
+        Log.v("Group","Group created");
+        text1.setText("");
+        group_name.setText("");
 
 
     }
