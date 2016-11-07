@@ -87,6 +87,7 @@ public class HomeActivity extends AppCompatActivity
     private boolean mPermissionDenied = false;
     String user_name = "";
     static GoogleMap mMap;
+
     Boolean flag = true;
     private LocationFragment location_fragment;
     private TextView user_address;
@@ -94,11 +95,12 @@ public class HomeActivity extends AppCompatActivity
     TypedArray menuIcons;
     String[] friend_address;
     private List<FriendBO> friends;
-    Marker markerName;
+    Marker UserMarker;
     static Location updated_location;
     protected static final String TAG = "HomeActivity";
     ListView listViewGroup = null;
-
+    String alertDialogSelect = "ALL";
+    //ArrayList<Marker> markerList;
 
     /**
      * The list of geofences used in this sample.
@@ -416,78 +418,73 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.group) {
+        if (id == R.id.create_group_item) {
             Intent intent = new Intent(HomeActivity.this,GroupsActivity.class);
             startActivity(intent);
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.edit_group_item) {
             Intent intent = new Intent(HomeActivity.this,EditGroupsActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_slideshow) {
-
-            AlertDialog.Builder builderSingle = new AlertDialog.Builder(HomeActivity.this);
-
-            builderSingle.setTitle("Select One Name:-");
-
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                    HomeActivity.this,
-                    android.R.layout.select_dialog_singlechoice);
-
-            Log.v("Hashmap in Home",GroupsActivity.groups.size()+"");
-            if(GroupsActivity.groups.size()>0) {
-                for (String key : GroupsActivity.groups.keySet()) {
-                    arrayAdapter.add(key);
-                }
-            }
-
-
-            builderSingle.setNegativeButton(
-                    "cancel",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-            builderSingle.setAdapter(
-                    arrayAdapter,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String strName = arrayAdapter.getItem(which);
-                            AlertDialog.Builder builderInner = new AlertDialog.Builder(
-                                    HomeActivity.this);
-                            builderInner.setMessage(strName);
-                            builderInner.setTitle("Your Selected Item is");
-                            builderInner.setPositiveButton(
-                                    "Ok",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(
-                                                DialogInterface dialog,
-                                                int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            builderInner.show();
-                        }
-                    });
-            builderSingle.show();
-
-
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.view_group_item) {
+            ShowGroupDialog();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void ShowGroupDialog() {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(HomeActivity.this);
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                HomeActivity.this,
+                android.R.layout.select_dialog_singlechoice);
+
+        //Log.v("Hashmap in Home",GroupsActivity.groups.size()+"");
+        if(GroupsActivity.groups.size()>0) {
+            for (String key : GroupsActivity.groups.keySet()) {
+                arrayAdapter.add(key);
+            }
+        }
+        if(arrayAdapter.isEmpty()) {
+            Toast.makeText(this, "You have no Groups", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        arrayAdapter.add("ALL");
+        builderSingle.setTitle("Select Group:-");
+
+        builderSingle.setNegativeButton(
+                "cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builderSingle.setSingleChoiceItems(arrayAdapter,-1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alertDialogSelect = arrayAdapter.getItem(i);
+
+            }
+        });
+
+        builderSingle.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(
+                            DialogInterface dialog,
+                            int which) {
+                        Log.v("Saif",alertDialogSelect);
+                        ShowGroupDetails();
+                        dialog.dismiss();
+                    }
+                });
+        builderSingle.show();
     }
 
     @Override
@@ -503,15 +500,15 @@ public class HomeActivity extends AppCompatActivity
         public void onMyLocationChange(Location location) {
 
             updated_location = location;
-            if(markerName != null){
-                markerName.remove();
+            if( UserMarker!= null){
+                UserMarker.remove();
             }
 
             ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(HomeActivity.this,location.getLatitude()+"",location.getLongitude()+"");
             String address = convert.getAddress();
             user_address.setText(address);
 
-            markerName = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME"));
+            UserMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME"));
 
             if(mMap != null && flag){
                 flag = false;
@@ -524,6 +521,7 @@ public class HomeActivity extends AppCompatActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
 
+        enableMyLocation();
         //mMap.clear();
         //userBO.setGmap(map);
         for (int j = 0;j<friends.size();j++){
@@ -531,16 +529,16 @@ public class HomeActivity extends AppCompatActivity
             LatLng loc = friends.get(j).getLoc();
             //userBO.setLoc(loc);
             Log.v("Inside",friends.get(j).toString());
-            mMap.addMarker(new MarkerOptions()
+            MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(loc.latitude, loc.longitude))
-                    .title(friends.get(j).getFriend_name()));
+                    .title(friends.get(j).getFriend_name());
+            Marker marker = mMap.addMarker(markerOptions);
+            //markerList.add(marker);
+
         }
         mMap.setOnMyLocationButtonClickListener(this);
 
         mMap.setOnMyLocationChangeListener(myLocationChangeListener);
-        enableMyLocation();
-
-
 
 
     }
@@ -682,5 +680,48 @@ public class HomeActivity extends AppCompatActivity
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+
+    private void ShowGroupDetails() {
+        mMap.clear();
+        //markerList.clear();
+
+        if(alertDialogSelect.equals("ALL")){
+            for (int j = 0;j<friends.size();j++){
+
+                LatLng loc = friends.get(j).getLoc();
+                //userBO.setLoc(loc);
+                Log.v("Inside",friends.get(j).toString());
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .position(new LatLng(loc.latitude, loc.longitude))
+                        .title(friends.get(j).getFriend_name());
+                Marker marker = mMap.addMarker(markerOptions);
+                //markerList.add(marker);
+
+            }
+        }
+        else {
+
+            ArrayList<String> group= GroupsActivity.groups.get(alertDialogSelect);
+            Log.v("Group Name-> ",alertDialogSelect);
+            for(String str: group)
+                Log.v("Member--> ",str);
+            for(int i = 0; i< group.size();i++){
+                //Log.v("Group Member", member);
+                for(int j =0; j<friends.size(); j++){
+                    if(group.get(i).equals(friends.get(j).getFriend_name())){
+                        LatLng loc = friends.get(j).getLoc();
+                        //userBO.setLoc(loc);
+                        Log.v("Inside",friends.get(j).toString());
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(new LatLng(loc.latitude, loc.longitude))
+                                .title(friends.get(j).getFriend_name());
+                        Marker marker = mMap.addMarker(markerOptions);
+                        //markerList.add(marker);
+                    }
+                }
+            }
+        }
     }
 }

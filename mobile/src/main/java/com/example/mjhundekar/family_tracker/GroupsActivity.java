@@ -76,6 +76,8 @@ public class GroupsActivity extends Activity {
         Log.v("Group","Group created");
         text1.setText("");
         group_name.setText("");
+        Toast.makeText(this,group_name.getText()+" Group Created",Toast.LENGTH_SHORT).show();
+        finish();
 
 
     }
