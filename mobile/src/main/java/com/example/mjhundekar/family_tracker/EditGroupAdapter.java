@@ -77,7 +77,7 @@ class EditGroupAdapter extends BaseAdapter {
                     break;
                 case TYPE_SEPARATOR:
                     convertView = mInflater.inflate(R.layout.edit_group_seperator, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textSeparator);
+                    //holder.textView = (TextView) convertView.findViewById(R.id.textSeparator);
                     break;
             }
             convertView.setTag(holder);

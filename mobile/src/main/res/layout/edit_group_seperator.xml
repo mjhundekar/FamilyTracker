@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+<LinearLayout
     android:layout_height="wrap_content"
-    android:background="#2F2F2F"
-    android:gravity="center_vertical" >
+    android:layout_width="fill_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        android:id="@+id/textSeparator"
+        android:id="@+id/list_item_section_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="8dp"
         android:text=""
         android:textAllCaps="true"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:background="@android:color/darker_gray"
         android:textColor="#FFF"
         android:textStyle="bold"
         android:visibility="visible" />

@@ -68,6 +68,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class HomeActivity extends AppCompatActivity
      * {@link #onRequestPermissionsResult(int, String[], int[])}.
      */
     private boolean mPermissionDenied = false;
-    String user_name = "";
+    static String user_name = "";
     static GoogleMap mMap;
 
     Boolean flag = true;
@@ -423,10 +424,19 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.edit_group_item) {
-            Intent intent = new Intent(HomeActivity.this,EditGroupActivity.class);
-            startActivity(intent);
+            if(GroupsActivity.number_of_groups>0) {
+                Intent intent = new Intent(HomeActivity.this, EditGroupActivity.class);
+                startActivity(intent);
+            }
+            else {
+                Toast.makeText(this,"You have no groups to edit",Toast.LENGTH_SHORT).show();
+            }
         } else if (id == R.id.view_group_item) {
-            ShowGroupDialog();
+            if(GroupsActivity.number_of_groups>0)
+                ShowGroupDialog();
+            else {
+                Toast.makeText(this,"You have no groups to view",Toast.LENGTH_SHORT).show();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -442,8 +452,8 @@ public class HomeActivity extends AppCompatActivity
                 android.R.layout.select_dialog_singlechoice);
 
         //Log.v("Hashmap in Home",GroupsActivity.groups.size()+"");
-        if(GroupsActivity.groups.size()>0) {
-            for (String key : GroupsActivity.groups.keySet()) {
+        if(GroupsActivity.number_of_groups>0) {
+            for (String key : GroupsActivity.group_names) {
                 arrayAdapter.add(key);
             }
         }
@@ -705,20 +715,21 @@ public class HomeActivity extends AppCompatActivity
 
             ArrayList<String> group= GroupsActivity.groups.get(alertDialogSelect);
             Log.v("Group Name-> ",alertDialogSelect);
-            for(String str: group)
-                Log.v("Member--> ",str);
-            for(int i = 0; i< group.size();i++){
-                //Log.v("Group Member", member);
-                for(int j =0; j<friends.size(); j++){
-                    if(group.get(i).equals(friends.get(j).getFriend_name())){
-                        LatLng loc = friends.get(j).getLoc();
-                        //userBO.setLoc(loc);
-                        Log.v("Inside",friends.get(j).toString());
-                        MarkerOptions markerOptions = new MarkerOptions()
-                                .position(new LatLng(loc.latitude, loc.longitude))
-                                .title(friends.get(j).getFriend_name());
-                        Marker marker = mMap.addMarker(markerOptions);
-                        //markerList.add(marker);
+            HashSet<String> set ;
+            for(int i =0;i< GroupsActivity.group_details.size();i++){
+                GroupBO groupBO = GroupsActivity.group_details.get(i);
+                if(groupBO.getGroup_name().equals(alertDialogSelect)){
+                    for(int j =0; j<friends.size(); j++){
+                        if(groupBO.getMember_name().equals(friends.get(j).getFriend_name())){
+                            LatLng loc = friends.get(j).getLoc();
+                            //userBO.setLoc(loc);
+
+                            MarkerOptions markerOptions = new MarkerOptions()
+                                    .position(new LatLng(loc.latitude, loc.longitude))
+                                    .title(friends.get(j).getFriend_name());
+                            Marker marker = mMap.addMarker(markerOptions);
+                            //markerList.add(marker);
+                        }
                     }
                 }
             }

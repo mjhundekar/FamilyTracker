@@ -20,24 +20,27 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GroupsActivity extends Activity {
 
     AutoCompleteTextView text;
     MultiAutoCompleteTextView text1;
-    HashMap<Integer,String> friends_map = new HashMap<Integer, String>();
     static HashMap<String,ArrayList<String>> groups = new HashMap<>();
+    static Set<String> group_names = new HashSet<>();
     EditText group_name;
+    static int number_of_groups = 0;
+    static ArrayList<Item> group_items = new ArrayList<Item>();
+
+    static ArrayList<GroupBO> group_details = new ArrayList<GroupBO>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
 
-        for(int i = 0; i<HomeActivity.friend_name.length;i++){
-            friends_map.put(i,HomeActivity.friend_name[i]);
-        }
         ArrayAdapter group_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, HomeActivity.friend_name);
         ListView listView = (ListView) findViewById(R.id.list_of_friends);
         listView.setAdapter(group_adapter);
@@ -61,14 +64,32 @@ public class GroupsActivity extends Activity {
     }
 
     public void addGroupButtonHandler(View view) {
+
+        number_of_groups++;
         String members[] = text1.getText().toString().split(", ");
         ArrayList<String> member = new ArrayList<>();
-        for(String m : members){
-            if(!m.equals(""))
-                member.add(m);
-        }
         group_name = (EditText) findViewById(R.id.group_name);
-        groups.put(group_name.getText().toString(),member);
+        String grp_name = group_name.getText().toString();
+        group_names.add(grp_name);
+        group_items.add(new SectionItem(group_name.getText().toString()));
+        GroupBO groupBO_user = new GroupBO();
+        groupBO_user.setAdmin(true);
+        groupBO_user.setMember_name(HomeActivity.user_name);
+        groupBO_user.setGroup_name(grp_name);
+        group_details.add(groupBO_user);
+        group_items.add(new EntryItem("Me",group_name.getText().toString(),"Admin"));
+        for(String m : members){
+            GroupBO groupBO = new GroupBO();
+            if(!m.equals("")) {
+                groupBO.setAdmin(false);
+                groupBO.setGroup_name(group_name.getText().toString());
+                groupBO.setMember_name(m);
+                group_details.add(groupBO);
+                group_items.add(new EntryItem(m,group_name.getText().toString(),""));
+            }
+        }
+
+        //groups.put(group_name.getText().toString(),member);
         Log.v("Hashmap in Group",groups.size()+"");
         /*HashMap<String,ArrayList<String>> existing_group = GroupBO.getGroup_list();
         existing_group.put(group_name.getText().toString(),member);
@@ -76,8 +97,8 @@ public class GroupsActivity extends Activity {
         Log.v("Group","Group created");
         text1.setText("");
         group_name.setText("");
-        Toast.makeText(this,group_name.getText()+" Group Created",Toast.LENGTH_SHORT).show();
-        finish();
+        Toast.makeText(this,"Group Created:"+grp_name,Toast.LENGTH_SHORT).show();
+
     }
 
 
