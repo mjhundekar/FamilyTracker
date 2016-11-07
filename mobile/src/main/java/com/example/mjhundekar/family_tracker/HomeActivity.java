@@ -423,7 +423,7 @@ public class HomeActivity extends AppCompatActivity
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.edit_group_item) {
-            Intent intent = new Intent(HomeActivity.this,EditGroupsActivity.class);
+            Intent intent = new Intent(HomeActivity.this,EditGroupActivity.class);
             startActivity(intent);
         } else if (id == R.id.view_group_item) {
             ShowGroupDialog();
