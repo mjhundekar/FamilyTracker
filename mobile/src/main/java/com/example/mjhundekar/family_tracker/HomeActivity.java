@@ -437,6 +437,13 @@ public class HomeActivity extends AppCompatActivity
             else {
                 Toast.makeText(this,"You have no groups to view",Toast.LENGTH_SHORT).show();
             }
+        } else if(id == R.id.create_geofence) {
+            if(GroupsActivity.number_of_groups>0) {
+                ShowGeoFence();
+            }
+            else {
+                Toast.makeText(this,"You have no groups to create geofence for",Toast.LENGTH_SHORT).show();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -526,6 +533,7 @@ public class HomeActivity extends AppCompatActivity
             }
         }
     };
+
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -734,5 +742,139 @@ public class HomeActivity extends AppCompatActivity
                 }
             }
         }
+    }
+    public void ShowGeoFence(){
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(HomeActivity.this);
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                HomeActivity.this,
+                android.R.layout.select_dialog_singlechoice);
+
+        //Log.v("Hashmap in Home",GroupsActivity.groups.size()+"");
+        if(GroupsActivity.number_of_groups>0) {
+            for (String key : GroupsActivity.group_names) {
+                arrayAdapter.add(key);
+            }
+        }
+        if(arrayAdapter.isEmpty()) {
+            Toast.makeText(this, "You have no Groups to display", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        builderSingle.setTitle("Select Group:-");
+
+        builderSingle.setNegativeButton(
+                "cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builderSingle.setSingleChoiceItems(arrayAdapter,-1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alertDialogSelect = arrayAdapter.getItem(i);
+
+            }
+        });
+
+        builderSingle.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(
+                            DialogInterface dialog,
+                            int which) {
+                        Log.v("Saif",alertDialogSelect);
+                        boolean adminCreateGeo = false;
+                        for(int i = 0 ; i< GroupsActivity.group_items.size();i++)
+                        {
+                            if (!GroupsActivity.group_items.get(i).isSection())
+                            {
+                                EntryItem entryItem = (EntryItem) GroupsActivity.group_items.get(i);
+                                if(entryItem.group_name.equals(alertDialogSelect))
+                                {
+                                    if(entryItem.member_name.equals("Me") && entryItem.isAdmin.equals("Admin"))
+                                    {
+                                        adminCreateGeo = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if(adminCreateGeo)
+                        {
+                            showgroupmembers(alertDialogSelect);
+                        }
+                        else {
+                            System.out.println("You are not admin of this group");
+                        }
+                        dialog.dismiss();
+
+                    }
+
+
+                });
+        builderSingle.show();
+    }
+
+    private void showgroupmembers(String Groupname)
+    {
+        AlertDialog.Builder builderMember = new AlertDialog.Builder(HomeActivity.this);
+        builderMember.setTitle("Select Member");
+
+        final ArrayAdapter<String> arrayAdapter1 = new ArrayAdapter<String>(
+                HomeActivity.this,
+                android.R.layout.select_dialog_singlechoice);
+
+        for(int i = 0 ; i< GroupsActivity.group_items.size();i++)
+        {
+            if (!GroupsActivity.group_items.get(i).isSection())
+            {
+                EntryItem entryItem = (EntryItem) GroupsActivity.group_items.get(i);
+                if(entryItem.group_name.equals(alertDialogSelect))
+                {
+                    if(!entryItem.member_name.equals("Me"))
+                        arrayAdapter1.add(entryItem.member_name);
+                }
+            }
+        }
+
+
+        if(arrayAdapter1.isEmpty()) {
+            Toast.makeText(this, "You have no members to display", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        builderMember.setNegativeButton(
+                "cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builderMember.setSingleChoiceItems(arrayAdapter1,-1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String memberForGeofence = arrayAdapter1.getItem(i);
+            }
+        });
+
+        builderMember.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        populateGeofenceList();
+
+                    }
+                });
+        builderMember.show();
+
     }
 }
