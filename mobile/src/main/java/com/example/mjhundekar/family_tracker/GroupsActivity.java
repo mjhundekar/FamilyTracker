@@ -88,6 +88,16 @@ public class GroupsActivity extends Activity {
                 group_items.add(new EntryItem(m,group_name.getText().toString(),""));
             }
         }
+        /*for(int i = 0 ; i< group_items.size();i++){
+            if(group_items.get(i).isSection()){
+                SectionItem sectionItem = (SectionItem) group_items.get(i);
+                System.out.println(sectionItem.getGroup_name());
+            }
+            else {
+                EntryItem entryItem = (EntryItem) group_items.get(i);
+                System.out.println(entryItem.group_name+"-"+entryItem.member_name+"-"+entryItem.isAdmin);
+            }
+        }*/
 
         //groups.put(group_name.getText().toString(),member);
         Log.v("Hashmap in Group",groups.size()+"");
@@ -97,7 +107,7 @@ public class GroupsActivity extends Activity {
         Log.v("Group","Group created");
         text1.setText("");
         group_name.setText("");
-        Toast.makeText(this,"Group Created:"+grp_name,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"Group Created: "+grp_name,Toast.LENGTH_SHORT).show();
 
     }
 

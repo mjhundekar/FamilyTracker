@@ -95,7 +95,7 @@ public class HomeActivity extends AppCompatActivity
     static String[] friend_name;
     TypedArray menuIcons;
     String[] friend_address;
-    private List<FriendBO> friends;
+    static List<FriendBO> friends;
     Marker UserMarker;
     static Location updated_location;
     protected static final String TAG = "HomeActivity";
