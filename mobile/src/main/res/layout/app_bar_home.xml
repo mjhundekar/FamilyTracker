@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/app_bar_home"
     tools:context="com.example.mjhundekar.family_tracker.HomeActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -50,19 +51,6 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="create"
-                android:id="@+id/add_geofences_button"
-                android:onClick="addGeofencesButtonHandler"/>
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="remove"
-                android:layout_toRightOf="@+id/add_geofences_button"
-                android:onClick="removeGeofencesButtonHandler"
-                android:id="@+id/remove_geofences_button"/>
         </RelativeLayout>
 
     </FrameLayout>

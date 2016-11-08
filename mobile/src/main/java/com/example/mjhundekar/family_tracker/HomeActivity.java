@@ -55,6 +55,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -70,14 +71,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,GoogleMap.OnMyLocationButtonClickListener,
-        OnMapReadyCallback,ResultCallback<Status>,
-        ActivityCompat.OnRequestPermissionsResultCallback,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        OnMapReadyCallback,ResultCallback<Status>,GoogleMap.OnMapLongClickListener,GoogleMap.OnMapClickListener,
+        ActivityCompat.OnRequestPermissionsResultCallback,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerDragListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -88,7 +88,7 @@ public class HomeActivity extends AppCompatActivity
     private boolean mPermissionDenied = false;
     static String user_name = "";
     static GoogleMap mMap;
-
+    int cccc= 0;
     Boolean flag = true;
     private LocationFragment location_fragment;
     private TextView user_address;
@@ -101,6 +101,9 @@ public class HomeActivity extends AppCompatActivity
     protected static final String TAG = "HomeActivity";
     ListView listViewGroup = null;
     String alertDialogSelect = "ALL";
+    double dragLat;
+    double dragLong;
+    Bitmap resizedBitmap;
     //ArrayList<Marker> markerList;
 
     /**
@@ -124,8 +127,8 @@ public class HomeActivity extends AppCompatActivity
     private SharedPreferences mSharedPreferences;
 
     // Buttons for kicking off the process of adding or removing geofences.
-    private Button mAddGeofencesButton;
-    private Button mRemoveGeofencesButton;
+    //private Button mAddGeofencesButton;
+    //private Button mRemoveGeofencesButton;
     private GoogleApiClient mGoogleApiClient;
 
 
@@ -137,8 +140,8 @@ public class HomeActivity extends AppCompatActivity
         buildGoogleApiClient();
 
         // Get the UI widgets.
-        mAddGeofencesButton = (Button) findViewById(R.id.add_geofences_button);
-        mRemoveGeofencesButton = (Button) findViewById(R.id.remove_geofences_button);
+        //mAddGeofencesButton = (Button) findViewById(R.id.add_geofences_button);
+        //mRemoveGeofencesButton = (Button) findViewById(R.id.remove_geofences_button);
 
         // Empty list for storing geofences.
         mGeofenceList = new ArrayList<Geofence>();
@@ -152,7 +155,7 @@ public class HomeActivity extends AppCompatActivity
 
         // Get the value of mGeofencesAdded from SharedPreferences. Set to false as a default.
         mGeofencesAdded = mSharedPreferences.getBoolean(Constants.GEOFENCES_ADDED_KEY, false);
-        setButtonsEnabledState();
+        //setButtonsEnabledState();
 
         // Get the geofences used. Geofence data is hard coded in this sample.
 
@@ -264,7 +267,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-
+    /*
     private void setButtonsEnabledState() {
         if (mGeofencesAdded) {
             mAddGeofencesButton.setEnabled(false);
@@ -274,6 +277,7 @@ public class HomeActivity extends AppCompatActivity
             mRemoveGeofencesButton.setEnabled(false);
         }
     }
+    */
 
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
@@ -525,7 +529,8 @@ public class HomeActivity extends AppCompatActivity
             String address = convert.getAddress();
             user_address.setText(address);
 
-            UserMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME"));
+            UserMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME")
+                                        .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap)));
 
             if(mMap != null && flag){
                 flag = false;
@@ -555,7 +560,7 @@ public class HomeActivity extends AppCompatActivity
 
         }
         mMap.setOnMyLocationButtonClickListener(this);
-
+        map.setOnMarkerDragListener(this);
         mMap.setOnMyLocationChangeListener(myLocationChangeListener);
 
 
@@ -584,7 +589,7 @@ public class HomeActivity extends AppCompatActivity
 
             // Update the UI. Adding geofences enables the Remove Geofences button, and removing
             // geofences enables the Add Geofences button.
-            setButtonsEnabledState();
+            //setButtonsEnabledState();
 
             Toast.makeText(
                     this,
@@ -638,6 +643,34 @@ public class HomeActivity extends AppCompatActivity
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        LatLng dragPosition = marker.getPosition();
+        dragLat = dragPosition.latitude;
+        dragLong = dragPosition.longitude;
+
+    }
+
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
@@ -653,11 +686,12 @@ public class HomeActivity extends AppCompatActivity
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
+                resizedBitmap = Bitmap.createScaledBitmap(mIcon11, 200, 200, false);
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-            return mIcon11;
+            return resizedBitmap;
         }
 
         protected void onPostExecute(Bitmap result) {
@@ -870,11 +904,33 @@ public class HomeActivity extends AppCompatActivity
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        populateGeofenceList();
+                        AddGeofenceMarker();
 
                     }
                 });
         builderMember.show();
 
+    }
+
+
+    private void AddGeofenceMarker() {
+        cccc++;
+        MarkerOptions geofence_markerOptions = new MarkerOptions().
+                position(new LatLng(updated_location.getLatitude(), updated_location.getLongitude())).title("ME")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                .draggable(true);
+        Marker geofence_marker = mMap.addMarker(geofence_markerOptions);
+        geofence_marker.setTag(cccc);
+        Toast.makeText(this,"Drag to adjust geofence",Toast.LENGTH_SHORT).show();
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                int i =(int)marker.getTag();
+                System.out.println(i);
+                Constants.BAY_AREA_LANDMARKS.put("Lacrose field",new LatLng(dragLat, dragLong));
+                addGeofencesButtonHandler(findViewById(R.id.app_bar_home));
+                return true;
+            }
+        });
     }
 }
