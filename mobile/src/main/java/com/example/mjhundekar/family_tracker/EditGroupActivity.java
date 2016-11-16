@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ public class EditGroupActivity extends Activity implements OnItemClickListener{
     ListView listview=null;
     HashMap<String,String> group_member = new HashMap<>();
     String deleteGroup;
+    private String add_member_group;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,7 @@ public class EditGroupActivity extends Activity implements OnItemClickListener{
                 final SectionItem group_seperator = (SectionItem) item;
                 //final SectionItem group_seperator = (SectionItem) GroupsActivity.group_items.get(position);
                 deleteGroup = group_seperator.getGroup_name().toLowerCase();
+                add_member_group = group_seperator.getGroup_name();
                 Toast.makeText(this, "You clicked " + group_seperator.getGroup_name(), Toast.LENGTH_SHORT).show();
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(EditGroupActivity.this);
                 builderSingle.setTitle("Select Action for group " + group_seperator.getGroup_name());
@@ -103,6 +104,74 @@ public class EditGroupActivity extends Activity implements OnItemClickListener{
                                 adapter.notifyDataSetChanged();
                             }
                         });
+
+                builderSingle.setPositiveButton("Add member", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, int i) {
+                        dialog.dismiss();
+                        AlertDialog.Builder builderInner = new AlertDialog.Builder(EditGroupActivity.this);
+                        final ArrayAdapter<String> arrayAdapter_of_left_members = new ArrayAdapter<String>(
+                                EditGroupActivity.this,
+                                android.R.layout.select_dialog_singlechoice);
+                        System.out.println("----> friends list");
+                        ArrayList<String> friends_list = new ArrayList<String>();
+                        for(int j = 0; j< HomeActivity.friends.size();j++){
+                                friends_list.add(HomeActivity.friends.get(j).getFriend_name());
+                                System.out.println(HomeActivity.friends.get(j).getFriend_name());
+                        }
+
+                        for(int k = 0 ; k< GroupsActivity.group_items.size();k++) {
+                            if (!GroupsActivity.group_items.get(k).isSection()) {
+                                EntryItem entryItem = (EntryItem) GroupsActivity.group_items.get(k);
+                                if(friends_list.contains(entryItem.member_name)){
+                                    System.out.println(entryItem.member_name+ "<--removed");
+                                    friends_list.remove(entryItem.member_name);
+                                }
+                            }
+                        }
+                        System.out.println("-------------------------");
+                        for (String a : friends_list){
+                            arrayAdapter_of_left_members.add(a);
+                            System.out.println(a);
+                        }
+
+
+
+                        builderInner.setTitle("Select member to Add");
+                        builderInner.setSingleChoiceItems(arrayAdapter_of_left_members,-1, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                alertDialogSelect = arrayAdapter_of_left_members.getItem(i);
+
+                            }
+                        });
+                        builderInner.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                for(int z = 0 ; z< GroupsActivity.group_items.size();z++) {
+                                    if (GroupsActivity.group_items.get(z).isSection()) {
+                                        SectionItem sectionItem = (SectionItem) GroupsActivity.group_items.get(z);
+                                        if(sectionItem.getGroup_name().equals(add_member_group)){
+                                            GroupsActivity.group_items.add(z+2,new EntryItem(alertDialogSelect,add_member_group,""));
+                                            break;
+                                        }
+                                    }
+                                }
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+
+                            }
+                        });
+                        builderInner.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        builderInner.show();
+                    }
+                });
                 builderSingle.show();
 
 

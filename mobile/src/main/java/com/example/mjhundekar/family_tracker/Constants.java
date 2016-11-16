@@ -47,6 +47,6 @@ public final class Constants {
         BAY_AREA_LANDMARKS.put("GOOGLE", new LatLng(37.422611,-122.0840577));
 
         //Leavey Library
-        BAY_AREA_LANDMARKS.put("Lacrose field",new LatLng(34.026708, -118.281783));
+        //BAY_AREA_LANDMARKS.put("Lacrose field",new LatLng(34.026708, -118.281783));
     }
 }
