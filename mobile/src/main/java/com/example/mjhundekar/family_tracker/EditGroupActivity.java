@@ -96,6 +96,7 @@ public class EditGroupActivity extends Activity implements OnItemClickListener{
                                         if (deleteGroup.equals(item_group)) {
                                             //System.out.println("Group name matched");
                                             itr.remove();
+                                            GroupsActivity.group_names.remove(entryItem.group_name);
                                         }
 
                                     }

@@ -28,6 +28,7 @@ android {
             minSdkVersion 9
         }
     }
+    useLibrary 'org.apache.http.legacy'
 }
 
 configurations.all {
