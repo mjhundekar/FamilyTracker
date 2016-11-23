@@ -29,29 +29,30 @@
         android:id="@+id/frameLayout">
 
         <fragment
-                android:id="@+id/map_fragment"
-                class="com.google.android.gms.maps.SupportMapFragment"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:name="com.example.mjhundekar.family_tracker.MapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:layout="@layout/fragment_map" />
-
-            <fragment
-                android:id="@+id/location_fragment"
-                android:name="com.example.mjhundekar.family_tracker.LocationFragment"
-                android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_gravity="bottom"
-                tools:layout="@layout/fragment_location"/>
-
-        <RelativeLayout
+            android:id="@+id/map_fragment"
+            class="com.google.android.gms.maps.SupportMapFragment"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:name="com.example.mjhundekar.family_tracker.MapFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_map"/>
 
-        </RelativeLayout>
+        <fragment
+            android:id="@+id/location_fragment"
+            android:name="com.example.mjhundekar.family_tracker.LocationFragment"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_gravity="bottom"
+            tools:layout="@layout/fragment_location"/>
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="45dp"
+            android:layout_height="37dp"
+            android:visibility="invisible"
+            android:id="@+id/seekBar"
+            android:max="1000" />
 
     </FrameLayout>
 

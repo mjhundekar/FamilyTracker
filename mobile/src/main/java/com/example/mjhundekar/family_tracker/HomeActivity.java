@@ -41,6 +41,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -63,10 +65,23 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.common.api.Status;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -88,7 +103,7 @@ public class HomeActivity extends AppCompatActivity
     private boolean mPermissionDenied = false;
     static String user_name = "";
     static GoogleMap mMap;
-    int cccc= 0;
+    int cccc = 0;
     Boolean flag = true;
     private LocationFragment location_fragment;
     private TextView user_address;
@@ -100,10 +115,17 @@ public class HomeActivity extends AppCompatActivity
     static Location updated_location;
     protected static final String TAG = "HomeActivity";
     ListView listViewGroup = null;
-    String alertDialogSelect = "ALL";
+    String group_name = "ALL";
     double dragLat;
     double dragLong;
     Bitmap resizedBitmap;
+    Circle c1 = null;
+    boolean add_more_geofence_restrictor = false;
+    private SeekBar seeker;
+    static int progress = 500;
+    String memberForGeofence = "";
+
+
     //ArrayList<Marker> markerList;
 
     /**
@@ -160,8 +182,6 @@ public class HomeActivity extends AppCompatActivity
         // Get the geofences used. Geofence data is hard coded in this sample.
 
 
-
-
         location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
         Bundle bundle = getIntent().getExtras();
 
@@ -174,22 +194,20 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         //navigationView.setNavigationItemSelectedListener(this);
-        View header=navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
         /*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
-        ImageView image = (ImageView)header.findViewById(R.id.profile_pic);
-        TextView name = (TextView)header.findViewById(R.id.name);
-        TextView email_id = (TextView)header.findViewById(R.id.email);
+        ImageView image = (ImageView) header.findViewById(R.id.profile_pic);
+        TextView name = (TextView) header.findViewById(R.id.name);
+        TextView email_id = (TextView) header.findViewById(R.id.email);
         name.setText(user_name);
         email_id.setText(email);
 
 
-
-        System.out.println("url------->"+photo);
+        System.out.println("url------->" + photo);
         //------------------MAP CODE-----------------
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
-
 
 
         //-------------------------------------------
@@ -236,13 +254,14 @@ public class HomeActivity extends AppCompatActivity
         for (int i = 0; i < friend_name.length; i++) {
             String[] location = friend_address[i].split(",");
             FriendBO items = new FriendBO(friend_name[i], menuIcons.getResourceId(
-                    i, -1),new LatLng(Double.parseDouble(location[0]),Double.parseDouble(location[1])));
+                    i, -1), new LatLng(Double.parseDouble(location[0]), Double.parseDouble(location[1])));
 
             friends.add(items);
         }
 
         // Kick off the request to build GoogleApiClient.
-        Toast.makeText(this,mGoogleApiClient.isConnected()+"",Toast.LENGTH_LONG).show();
+
+        Toast.makeText(this, mGoogleApiClient.isConnected() + "", Toast.LENGTH_LONG).show();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -255,12 +274,10 @@ public class HomeActivity extends AppCompatActivity
 
     protected void onResume() {
         super.onResume();
-        if(mGoogleApiClient != null){
+        if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
             Log.i(TAG, "OnResume, Connected back!");
-        }
-        else
-        {
+        } else {
             buildGoogleApiClient();
         }
 
@@ -306,7 +323,7 @@ public class HomeActivity extends AppCompatActivity
                     .setCircularRegion(
                             entry.getValue().latitude,
                             entry.getValue().longitude,
-                            Constants.GEOFENCE_RADIUS_IN_METERS
+                            HomeActivity.progress
                     )
 
                     // Set the expiration duration of the geofence. This geofence gets automatically
@@ -321,15 +338,15 @@ public class HomeActivity extends AppCompatActivity
                     // Create the geofence.
                     .build());
 
-                    //Create a circle
-                    CircleOptions circleOptions = new CircleOptions()
+            //Create a circle
+                    /*CircleOptions circleOptions = new CircleOptions()
                     .center( new LatLng(entry.getValue().latitude, entry.getValue().longitude) )
                     .radius( Constants.GEOFENCE_RADIUS_IN_METERS )
                     .fillColor(0x40ff0000)
                     .strokeColor(Color.TRANSPARENT)
                     .strokeWidth(2);
                     mMap.addCircle(circleOptions);
-                    Log.v(TAG,"In create geofence");
+                    Log.v(TAG,"In create geofence");*/
         }
     }
 
@@ -337,7 +354,7 @@ public class HomeActivity extends AppCompatActivity
      * Adds geofences, which sets alerts to be notified when the device enters or exits one of the
      * specified geofences. Handles the success or failure results returned by addGeofences().
      */
-    public void addGeofencesButtonHandler(View view) {
+    public void addGeofencesButtonHandler() {
         if (!mGoogleApiClient.isConnected()) {
             Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
@@ -424,29 +441,27 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.create_group_item) {
-            Intent intent = new Intent(HomeActivity.this,GroupsActivity.class);
+            Intent intent = new Intent(HomeActivity.this, GroupsActivity.class);
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.edit_group_item) {
-            if(GroupsActivity.number_of_groups>0) {
+            if (GroupsActivity.number_of_groups > 0) {
                 Intent intent = new Intent(HomeActivity.this, EditGroupActivity.class);
                 startActivity(intent);
-            }
-            else {
-                Toast.makeText(this,"You have no groups to edit",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "You have no groups to edit", Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.view_group_item) {
-            if(GroupsActivity.number_of_groups>0)
+            if (GroupsActivity.number_of_groups > 0)
                 ShowGroupDialog();
             else {
-                Toast.makeText(this,"You have no groups to view",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "You have no groups to view", Toast.LENGTH_SHORT).show();
             }
-        } else if(id == R.id.create_geofence) {
-            if(GroupsActivity.number_of_groups>0) {
+        } else if (id == R.id.create_geofence) {
+            if (GroupsActivity.number_of_groups > 0) {
                 ShowGeoFence();
-            }
-            else {
-                Toast.makeText(this,"You have no groups to create geofence for",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "You have no groups to create geofence for", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -463,12 +478,12 @@ public class HomeActivity extends AppCompatActivity
                 android.R.layout.select_dialog_singlechoice);
 
         //Log.v("Hashmap in Home",GroupsActivity.groups.size()+"");
-        if(GroupsActivity.number_of_groups>0) {
+        if (GroupsActivity.number_of_groups > 0) {
             for (String key : GroupsActivity.group_names) {
                 arrayAdapter.add(key);
             }
         }
-        if(arrayAdapter.isEmpty()) {
+        if (arrayAdapter.isEmpty()) {
             Toast.makeText(this, "You have no Groups", Toast.LENGTH_LONG).show();
             return;
         }
@@ -485,10 +500,10 @@ public class HomeActivity extends AppCompatActivity
                     }
                 });
 
-        builderSingle.setSingleChoiceItems(arrayAdapter,-1, new DialogInterface.OnClickListener() {
+        builderSingle.setSingleChoiceItems(arrayAdapter, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                alertDialogSelect = arrayAdapter.getItem(i);
+                group_name = arrayAdapter.getItem(i);
 
             }
         });
@@ -500,7 +515,7 @@ public class HomeActivity extends AppCompatActivity
                     public void onClick(
                             DialogInterface dialog,
                             int which) {
-                        Log.v("Saif",alertDialogSelect);
+                        Log.v("Saif", group_name);
                         ShowGroupDetails();
                         dialog.dismiss();
                     }
@@ -521,18 +536,18 @@ public class HomeActivity extends AppCompatActivity
         public void onMyLocationChange(Location location) {
 
             updated_location = location;
-            if( UserMarker!= null){
+            if (UserMarker != null) {
                 UserMarker.remove();
             }
 
-            ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(HomeActivity.this,location.getLatitude()+"",location.getLongitude()+"");
+            ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(HomeActivity.this, location.getLatitude() + "", location.getLongitude() + "");
             String address = convert.getAddress();
             user_address.setText(address);
 
             UserMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME")
-                                        .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap)));
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap)));
 
-            if(mMap != null && flag){
+            if (mMap != null && flag) {
                 flag = false;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
             }
@@ -547,11 +562,11 @@ public class HomeActivity extends AppCompatActivity
         enableMyLocation();
         //mMap.clear();
         //userBO.setGmap(map);
-        for (int j = 0;j<friends.size();j++){
+        for (int j = 0; j < friends.size(); j++) {
 
             LatLng loc = friends.get(j).getLoc();
             //userBO.setLoc(loc);
-            Log.v("Inside",friends.get(j).toString());
+            Log.v("Inside", friends.get(j).toString());
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(loc.latitude, loc.longitude))
                     .title(friends.get(j).getFriend_name());
@@ -610,7 +625,7 @@ public class HomeActivity extends AppCompatActivity
      * Removes geofences, which stops further notifications when the device enters or exits
      * previously registered geofences.
      */
-    public void removeGeofencesButtonHandler(View view) {
+    public void removeGeofencesButtonHandler() {
         if (!mGoogleApiClient.isConnected()) {
             Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
@@ -668,6 +683,15 @@ public class HomeActivity extends AppCompatActivity
         LatLng dragPosition = marker.getPosition();
         dragLat = dragPosition.latitude;
         dragLong = dragPosition.longitude;
+        if (c1 != null)
+            c1.remove();
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(marker.getPosition().latitude, marker.getPosition().longitude))
+                .radius(HomeActivity.progress)
+                .fillColor(0x40ff0000)
+                .strokeColor(Color.TRANSPARENT)
+                .strokeWidth(2);
+        c1 = mMap.addCircle(circleOptions);
 
     }
 
@@ -681,12 +705,12 @@ public class HomeActivity extends AppCompatActivity
 
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
-            Log.v("url",urldisplay);
+            Log.v("url", urldisplay);
             Bitmap mIcon11 = null;
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
-                resizedBitmap = Bitmap.createScaledBitmap(mIcon11, 200, 200, false);
+                resizedBitmap = Bitmap.createScaledBitmap(mIcon11, 150, 150, false);
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -739,12 +763,12 @@ public class HomeActivity extends AppCompatActivity
         mMap.clear();
         //markerList.clear();
 
-        if(alertDialogSelect.equals("ALL")){
-            for (int j = 0;j<friends.size();j++){
+        if (group_name.equals("ALL")) {
+            for (int j = 0; j < friends.size(); j++) {
 
                 LatLng loc = friends.get(j).getLoc();
                 //userBO.setLoc(loc);
-                Log.v("Inside",friends.get(j).toString());
+                Log.v("Inside", friends.get(j).toString());
                 MarkerOptions markerOptions = new MarkerOptions()
                         .position(new LatLng(loc.latitude, loc.longitude))
                         .title(friends.get(j).getFriend_name());
@@ -752,17 +776,16 @@ public class HomeActivity extends AppCompatActivity
                 //markerList.add(marker);
 
             }
-        }
-        else {
+        } else {
 
-            ArrayList<String> group= GroupsActivity.groups.get(alertDialogSelect);
-            Log.v("Group Name-> ",alertDialogSelect);
-            HashSet<String> set ;
-            for(int i =0;i< GroupsActivity.group_details.size();i++){
+            ArrayList<String> group = GroupsActivity.groups.get(group_name);
+            Log.v("Group Name-> ", group_name);
+            HashSet<String> set;
+            for (int i = 0; i < GroupsActivity.group_details.size(); i++) {
                 GroupBO groupBO = GroupsActivity.group_details.get(i);
-                if(groupBO.getGroup_name().equals(alertDialogSelect)){
-                    for(int j =0; j<friends.size(); j++){
-                        if(groupBO.getMember_name().equals(friends.get(j).getFriend_name())){
+                if (groupBO.getGroup_name().equals(group_name)) {
+                    for (int j = 0; j < friends.size(); j++) {
+                        if (groupBO.getMember_name().equals(friends.get(j).getFriend_name())) {
                             LatLng loc = friends.get(j).getLoc();
                             //userBO.setLoc(loc);
 
@@ -777,7 +800,8 @@ public class HomeActivity extends AppCompatActivity
             }
         }
     }
-    public void ShowGeoFence(){
+
+    public void ShowGeoFence() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(HomeActivity.this);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
@@ -785,12 +809,12 @@ public class HomeActivity extends AppCompatActivity
                 android.R.layout.select_dialog_singlechoice);
 
         //Log.v("Hashmap in Home",GroupsActivity.groups.size()+"");
-        if(GroupsActivity.number_of_groups>0) {
+        if (GroupsActivity.number_of_groups > 0) {
             for (String key : GroupsActivity.group_names) {
                 arrayAdapter.add(key);
             }
         }
-        if(arrayAdapter.isEmpty()) {
+        if (arrayAdapter.isEmpty()) {
             Toast.makeText(this, "You have no Groups to display", Toast.LENGTH_LONG).show();
             return;
         }
@@ -806,10 +830,10 @@ public class HomeActivity extends AppCompatActivity
                     }
                 });
 
-        builderSingle.setSingleChoiceItems(arrayAdapter,-1, new DialogInterface.OnClickListener() {
+        builderSingle.setSingleChoiceItems(arrayAdapter, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                alertDialogSelect = arrayAdapter.getItem(i);
+                group_name = arrayAdapter.getItem(i);
 
             }
         });
@@ -821,28 +845,22 @@ public class HomeActivity extends AppCompatActivity
                     public void onClick(
                             DialogInterface dialog,
                             int which) {
-                        Log.v("Saif",alertDialogSelect);
+                        Log.v("Saif", group_name);
                         boolean adminCreateGeo = false;
-                        for(int i = 0 ; i< GroupsActivity.group_items.size();i++)
-                        {
-                            if (!GroupsActivity.group_items.get(i).isSection())
-                            {
+                        for (int i = 0; i < GroupsActivity.group_items.size(); i++) {
+                            if (!GroupsActivity.group_items.get(i).isSection()) {
                                 EntryItem entryItem = (EntryItem) GroupsActivity.group_items.get(i);
-                                if(entryItem.group_name.equals(alertDialogSelect))
-                                {
-                                    if(entryItem.member_name.equals("Me") && entryItem.isAdmin.equals("Admin"))
-                                    {
+                                if (entryItem.group_name.equals(group_name)) {
+                                    if (entryItem.member_name.equals("Me") && entryItem.isAdmin.equals("Admin")) {
                                         adminCreateGeo = true;
                                         break;
                                     }
                                 }
                             }
                         }
-                        if(adminCreateGeo)
-                        {
-                            showgroupmembers(alertDialogSelect);
-                        }
-                        else {
+                        if (adminCreateGeo) {
+                            showgroupmembers(group_name);
+                        } else {
                             System.out.println("You are not admin of this group");
                         }
                         dialog.dismiss();
@@ -854,8 +872,7 @@ public class HomeActivity extends AppCompatActivity
         builderSingle.show();
     }
 
-    private void showgroupmembers(String Groupname)
-    {
+    private void showgroupmembers(String Groupname) {
         AlertDialog.Builder builderMember = new AlertDialog.Builder(HomeActivity.this);
         builderMember.setTitle("Select Member");
 
@@ -863,21 +880,18 @@ public class HomeActivity extends AppCompatActivity
                 HomeActivity.this,
                 android.R.layout.select_dialog_singlechoice);
 
-        for(int i = 0 ; i< GroupsActivity.group_items.size();i++)
-        {
-            if (!GroupsActivity.group_items.get(i).isSection())
-            {
+        for (int i = 0; i < GroupsActivity.group_items.size(); i++) {
+            if (!GroupsActivity.group_items.get(i).isSection()) {
                 EntryItem entryItem = (EntryItem) GroupsActivity.group_items.get(i);
-                if(entryItem.group_name.equals(alertDialogSelect))
-                {
-                    if(!entryItem.member_name.equals("Me"))
+                if (entryItem.group_name.equals(group_name)) {
+                    if (!entryItem.member_name.equals("Me"))
                         arrayAdapter1.add(entryItem.member_name);
                 }
             }
         }
 
 
-        if(arrayAdapter1.isEmpty()) {
+        if (arrayAdapter1.isEmpty()) {
             Toast.makeText(this, "You have no members to display", Toast.LENGTH_LONG).show();
             return;
         }
@@ -891,10 +905,10 @@ public class HomeActivity extends AppCompatActivity
                     }
                 });
 
-        builderMember.setSingleChoiceItems(arrayAdapter1,-1, new DialogInterface.OnClickListener() {
+        builderMember.setSingleChoiceItems(arrayAdapter1, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                String memberForGeofence = arrayAdapter1.getItem(i);
+                memberForGeofence = arrayAdapter1.getItem(i);
             }
         });
 
@@ -904,6 +918,29 @@ public class HomeActivity extends AppCompatActivity
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        seeker = (SeekBar) findViewById(R.id.seekBar);
+                        seeker.setVisibility(View.VISIBLE);
+                        seeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                                if (i == 0)
+                                    HomeActivity.progress = 50;
+                                else
+                                    HomeActivity.progress = i * 2;
+                                c1.setRadius(HomeActivity.progress);
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {
+
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {
+
+                            }
+                        });
                         AddGeofenceMarker();
 
                     }
@@ -915,22 +952,68 @@ public class HomeActivity extends AppCompatActivity
 
     private void AddGeofenceMarker() {
         cccc++;
+        add_more_geofence_restrictor = false;
         MarkerOptions geofence_markerOptions = new MarkerOptions().
-                position(new LatLng(updated_location.getLatitude(), updated_location.getLongitude())).title("ME")
+                position(new LatLng(updated_location.getLatitude() + 0.005, updated_location.getLongitude() + 0.005)).title("Geofence")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
                 .draggable(true);
-        Marker geofence_marker = mMap.addMarker(geofence_markerOptions);
-        geofence_marker.setTag(cccc);
-        Toast.makeText(this,"Drag to adjust geofence",Toast.LENGTH_SHORT).show();
+        final Marker geofence_marker = mMap.addMarker(geofence_markerOptions);
+        //---------->>>>>>>>>>>>geofence_marker.setTag(cccc);
+        Toast.makeText(this, "Drag to adjust geofence", Toast.LENGTH_SHORT).show();
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(updated_location.getLatitude() + 0.005, updated_location.getLongitude() + 0.005))
+                .radius(HomeActivity.progress)
+                .fillColor(0x40ff0000)
+                .strokeColor(Color.TRANSPARENT)
+                .strokeWidth(2);
+        c1 = mMap.addCircle(circleOptions);
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                int i =(int)marker.getTag();
-                System.out.println(i);
-                Constants.BAY_AREA_LANDMARKS.put("Lacrose field",new LatLng(dragLat, dragLong));
-                addGeofencesButtonHandler(findViewById(R.id.app_bar_home));
+            public boolean onMarkerClick(final Marker marker) {
+
+                //int i =(int)marker.getTag();
+                AlertDialog.Builder builderMember = new AlertDialog.Builder(HomeActivity.this);
+                builderMember.setTitle("Select Action for " + geofence_marker.getTitle());
+                builderMember.setNegativeButton(
+                        "Delete",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Toast.makeText(HomeActivity.this,"Work in progress",Toast.LENGTH_SHORT).show();
+                                SeekBar seeker = (SeekBar) findViewById(R.id.seekBar);
+                                seeker.setVisibility(View.INVISIBLE);
+                                removeGeofencesButtonHandler();
+                                c1.remove();
+                                marker.remove();
+                                dialog.dismiss();
+                            }
+                        });
+                builderMember.setPositiveButton(
+                        "Add",
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                SeekBar seeker = (SeekBar) findViewById(R.id.seekBar);
+                                seeker.setVisibility(View.INVISIBLE);
+                                Constants.BAY_AREA_LANDMARKS.put("USC", new LatLng(dragLat, dragLong)); //HomeActivity.progress , memberForGeofence , user_name
+                                //InsertGeofenceIntoDatabase(dragLat, dragLong, HomeActivity.progress, memberForGeofence, user_name, group_name);
+                                if (!add_more_geofence_restrictor) {
+                                    addGeofencesButtonHandler();
+                                    Toast.makeText(HomeActivity.this, "Geofence created", Toast.LENGTH_SHORT).show();
+                                    add_more_geofence_restrictor = true;
+                                    geofence_marker.setDraggable(false);
+                                }
+
+                            }
+                        });
+                builderMember.show();
+
                 return true;
             }
         });
     }
+
+
 }
