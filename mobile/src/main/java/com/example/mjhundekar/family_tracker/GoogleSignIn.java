@@ -20,6 +20,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -27,6 +28,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.
@@ -37,9 +45,12 @@ public class GoogleSignIn extends LoginActivity implements
 
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
-
+    private DatabaseReference mDatabase;
     // [START declare_auth]
     private FirebaseAuth mAuth;
+    public String username;
+    public String email;
+    public String firebase_id;
     // [END declare_auth]
 
     // [START declare_auth_listener]
@@ -49,6 +60,7 @@ public class GoogleSignIn extends LoginActivity implements
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
+    static UserBO userBO = new UserBO();
 
 
     @Override
@@ -59,6 +71,8 @@ public class GoogleSignIn extends LoginActivity implements
         // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
         //mDetailTextView = (TextView) findViewById(R.id.detail);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -213,6 +227,12 @@ public class GoogleSignIn extends LoginActivity implements
             Log.v("Umang", user.getEmail());
             Log.v("Umang", String.valueOf(user.getPhotoUrl()));
 
+            email = mAuth.getCurrentUser().getEmail().toString();
+            username = mAuth.getCurrentUser().getDisplayName().toString();
+            firebase_id = mAuth.getCurrentUser().getUid().toString();
+            writeNewUser(firebase_id,username,email);
+
+
             //mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             //mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
@@ -253,4 +273,18 @@ public class GoogleSignIn extends LoginActivity implements
             revokeAccess();
         }
     }
+
+    private void writeNewUser(String firebase_id, String name, String email) {
+        //UserBO user = new UserBO(firebase_id,name,email);
+        ArrayList<String> a = new ArrayList<String>();
+        a.add("Saif");
+        a.add("Abcd");
+        userBO.setEmail(email);
+        userBO.setFirebase_id(firebase_id);
+        userBO.setUsername(name);
+        userBO.setFriend_list(a);
+        mDatabase.child("users").child(firebase_id).setValue(userBO);
+    }
+
+
 }

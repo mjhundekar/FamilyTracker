@@ -463,6 +463,10 @@ public class HomeActivity extends AppCompatActivity
             } else {
                 Toast.makeText(this, "You have no groups to create geofence for", Toast.LENGTH_SHORT).show();
             }
+        }else if(id == R.id.add_friends)
+        {
+            Intent intent = new Intent(HomeActivity.this, AddFriends.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
