@@ -64,6 +64,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -124,7 +126,9 @@ public class HomeActivity extends AppCompatActivity
     private SeekBar seeker;
     static int progress = 500;
     String memberForGeofence = "";
-
+    private DatabaseReference mdatabase;
+    String email;
+    String uid;
 
     //ArrayList<Marker> markerList;
 
@@ -160,7 +164,7 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
 
         buildGoogleApiClient();
-
+        mdatabase = FirebaseDatabase.getInstance().getReference();
         // Get the UI widgets.
         //mAddGeofencesButton = (Button) findViewById(R.id.add_geofences_button);
         //mRemoveGeofencesButton = (Button) findViewById(R.id.remove_geofences_button);
@@ -185,11 +189,12 @@ public class HomeActivity extends AppCompatActivity
         location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
         Bundle bundle = getIntent().getExtras();
 
-        String email = bundle.getString("email");
+        email = bundle.getString("email");
         //userBO.setEmail(email);
         user_name = bundle.getString("name");
         //userBO.setUser_name(user_name);
         String photo = bundle.getString("photo");
+        uid = bundle.getString("uid");
 
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -536,10 +541,13 @@ public class HomeActivity extends AppCompatActivity
         public void onMyLocationChange(Location location) {
 
             updated_location = location;
+            HashMap<String,Object> updatedlocation = new HashMap<>();
+            updatedlocation.put("location",new LatLng(location.getLatitude(),location.getLongitude()));
+            mdatabase.child("users").child(uid).updateChildren(updatedlocation);
             if (UserMarker != null) {
                 UserMarker.remove();
             }
-
+            Log.v("in Location","in location");
             ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(HomeActivity.this, location.getLatitude() + "", location.getLongitude() + "");
             String address = convert.getAddress();
             user_address.setText(address);
