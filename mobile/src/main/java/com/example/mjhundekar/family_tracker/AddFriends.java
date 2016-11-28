@@ -2,13 +2,17 @@ package com.example.mjhundekar.family_tracker;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.firebase.auth.api.model.StringList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -42,13 +46,36 @@ public class AddFriends extends Activity {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //HashMap<String,Object> friends = new HashMap<String, Object>();
-                //friends.put("email",get_email_id.getText().toString());
-                //mDatabase.child("users").child(email).setValue(friends);
+                friend_email = get_email_id.getText().toString().toLowerCase();
+                FirebaseDatabase.getInstance().getReference().child("users").orderByChild("email").equalTo(friend_email)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
 
-                //mDatabase.child("users").child()
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                String friendKey = "";
+                                HashMap<String,Object> friendDetails = (HashMap<String, Object>) dataSnapshot.getValue();
+
+                                for (DataSnapshot task : dataSnapshot.getChildren()) {
+                                    Log.v("email_",task.getKey());
+                                    friendKey = task.getKey().toString();
+                                }
+
+                                friendDetails.put(friendKey,friend_email);
+                                HashMap<String,Object> myDetails = new HashMap<String, Object>();
+                                myDetails.put(HomeActivity.uid,HomeActivity.email);
+                                FirebaseDatabase.getInstance().getReference().child("friends").child(HomeActivity.uid).updateChildren(friendDetails);
+                                FirebaseDatabase.getInstance().getReference().child("friends").child(friendKey).updateChildren(myDetails);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+
             }
-
         });
     }
 }

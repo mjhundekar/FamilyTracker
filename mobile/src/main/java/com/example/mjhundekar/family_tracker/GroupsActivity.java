@@ -17,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ public class GroupsActivity extends Activity {
     EditText group_name;
     static int number_of_groups = 0;
     static ArrayList<Item> group_items = new ArrayList<Item>();
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     static ArrayList<GroupBO> group_details = new ArrayList<GroupBO>();
 
@@ -78,9 +81,14 @@ public class GroupsActivity extends Activity {
         groupBO_user.setGroup_name(grp_name);
         group_details.add(groupBO_user);
         group_items.add(new EntryItem("Me",group_name.getText().toString(),"Admin"));
+
+
         for(String m : members){
             GroupBO groupBO = new GroupBO();
             if(!m.equals("")) {
+                //HashMap<String,Object> memberdetails = new HashMap<>();
+                //mDatabase.child(group_name.getText().toString()).setValue()
+
                 groupBO.setAdmin(false);
                 groupBO.setGroup_name(group_name.getText().toString());
                 groupBO.setMember_name(m);

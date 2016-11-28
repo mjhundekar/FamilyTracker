@@ -64,8 +64,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.common.api.Status;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -113,6 +117,7 @@ public class HomeActivity extends AppCompatActivity
     TypedArray menuIcons;
     String[] friend_address;
     static List<FriendBO> friends;
+    List<String> friends_fb = new ArrayList<>();
     Marker UserMarker;
     static Location updated_location;
     protected static final String TAG = "HomeActivity";
@@ -127,8 +132,11 @@ public class HomeActivity extends AppCompatActivity
     static int progress = 500;
     String memberForGeofence = "";
     private DatabaseReference mdatabase;
-    String email;
-    String uid;
+    static String email;
+    static String uid;
+    HashMap<String,Marker> MarkerMap = new HashMap<>();
+    HashMap<String,LatLng> LocationMap = new HashMap<>();
+    HashMap<String,Bitmap> ImageMap = new HashMap<>();
 
     //ArrayList<Marker> markerList;
 
@@ -263,6 +271,64 @@ public class HomeActivity extends AppCompatActivity
 
             friends.add(items);
         }
+
+        //String friends = mdatabase.getKey();
+        mdatabase.child("friends").child(uid).orderByChild(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //System.out.println("Saifalikaredia "+dataSnapshot.toString());
+                for (DataSnapshot task : dataSnapshot.getChildren()) {
+
+                    String friendvalue = (String) task.getValue();
+                    //System.out.println("Saifalikaredia "+friendvalue);
+                    mdatabase.child("users").orderByChild("email").equalTo(friendvalue).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //System.out.println("Saifalikaredia "+dataSnapshot.toString());
+                            for (DataSnapshot task : dataSnapshot.getChildren()) {
+
+                                HashMap<String,Object> friendDetails = (HashMap<String, Object>) task.getValue();
+                                //System.out.println("Saifalikaredia "+friendDetails.get("username"));
+                                HashMap<String,Object> loc = (HashMap<String, Object>) friendDetails.get("location");
+                                String friend_name_fb = friendDetails.get("username").toString();
+                                if(friend_name_fb!=null) {
+                                    friends_fb.add(friend_name_fb);
+                                    new DownloadImageFriend(friend_name_fb).execute(friendDetails.get("photoUrl").toString());
+
+                                        MarkerOptions markerOptions = new MarkerOptions()
+                                                .position(new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")))
+                                                .title(friend_name_fb);
+
+                                        if(ImageMap.containsKey(friend_name_fb))
+                                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(ImageMap.get(friend_name_fb)));
+                                        Marker marker = mMap.addMarker(markerOptions);
+                                        MarkerMap.put(friend_name_fb,marker);
+
+                                }
+                                //System.out.println("Saifalikaredia " + loc.get("latitude"));
+
+                                //String friendvalue = (String) task.getValue();
+                                //System.out.println("Saifalikaredia "+friendvalue);
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         // Kick off the request to build GoogleApiClient.
 
@@ -468,6 +534,9 @@ public class HomeActivity extends AppCompatActivity
             } else {
                 Toast.makeText(this, "You have no groups to create geofence for", Toast.LENGTH_SHORT).show();
             }
+        } else if (id == R.id.add_friends) {
+            Intent intent = new Intent(HomeActivity.this, AddFriends.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -547,7 +616,7 @@ public class HomeActivity extends AppCompatActivity
             if (UserMarker != null) {
                 UserMarker.remove();
             }
-            Log.v("in Location","in location");
+            //Log.v("in Location","in location");
             ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(HomeActivity.this, location.getLatitude() + "", location.getLongitude() + "");
             String address = convert.getAddress();
             user_address.setText(address);
@@ -566,11 +635,59 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        mdatabase.child("users").orderByChild("location").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                HashMap<String,Object> friendsLocation = (HashMap<String, Object>) dataSnapshot.getValue();
+                System.out.println("Saifalikaredia " + friendsLocation.get("username"));
+                String friends_ans = friendsLocation.get("username").toString();
+                HashMap<String,Object> loc = (HashMap<String, Object>) friendsLocation.get("location");
+                System.out.println("Saifalikaredia " + loc.get("latitude"));
+                LocationMap.put(friends_ans,new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")));
+
+
+                if(friends_fb.contains(friends_ans)){
+                    if(MarkerMap.get(friends_ans)!=null){
+                        MarkerMap.get(friends_ans).remove();
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(LocationMap.get(friends_ans))
+                                .title(friends_ans);
+                        if(ImageMap.containsKey(friends_ans))
+                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(ImageMap.get(friends_ans)));
+                        Marker marker = mMap.addMarker(markerOptions);
+                        MarkerMap.put(friends_ans,marker);
+                    }
+
+                }
+
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         enableMyLocation();
         //mMap.clear();
         //userBO.setGmap(map);
-        for (int j = 0; j < friends.size(); j++) {
+        /*for (int j = 0; j < friends.size(); j++) {
 
             LatLng loc = friends.get(j).getLoc();
             //userBO.setLoc(loc);
@@ -581,7 +698,7 @@ public class HomeActivity extends AppCompatActivity
             Marker marker = mMap.addMarker(markerOptions);
             //markerList.add(marker);
 
-        }
+        }*/
         mMap.setOnMyLocationButtonClickListener(this);
         map.setOnMarkerDragListener(this);
         mMap.setOnMyLocationChangeListener(myLocationChangeListener);
@@ -718,7 +835,7 @@ public class HomeActivity extends AppCompatActivity
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
-                resizedBitmap = Bitmap.createScaledBitmap(mIcon11, 150, 150, false);
+                resizedBitmap = Bitmap.createScaledBitmap(mIcon11, 100, 100, false);
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -730,6 +847,38 @@ public class HomeActivity extends AppCompatActivity
             bmImage.setImageBitmap(result);
         }
     }
+
+
+    private class DownloadImageFriend extends AsyncTask<String, Void, Bitmap> {
+        String friend;
+        DownloadImageFriend(String friend){
+            this.friend = friend;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Log.v("url", urldisplay);
+            Bitmap mIcon11 = null;
+            Bitmap resizedBitmap1 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+                resizedBitmap1 = Bitmap.createScaledBitmap(mIcon11, 100, 100, false);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+            return resizedBitmap1;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            Marker marker = MarkerMap.get(friend);
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(result));
+            ImageMap.put(friend,result);
+        }
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -779,7 +928,7 @@ public class HomeActivity extends AppCompatActivity
                 Log.v("Inside", friends.get(j).toString());
                 MarkerOptions markerOptions = new MarkerOptions()
                         .position(new LatLng(loc.latitude, loc.longitude))
-                        .title(friends.get(j).getFriend_name());
+                        .title("Fake");
                 Marker marker = mMap.addMarker(markerOptions);
                 //markerList.add(marker);
 
@@ -799,7 +948,7 @@ public class HomeActivity extends AppCompatActivity
 
                             MarkerOptions markerOptions = new MarkerOptions()
                                     .position(new LatLng(loc.latitude, loc.longitude))
-                                    .title(friends.get(j).getFriend_name());
+                                    .title("Fake");
                             Marker marker = mMap.addMarker(markerOptions);
                             //markerList.add(marker);
                         }
