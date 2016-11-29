@@ -1,5 +1,7 @@
 package com.example.mjhundekar.family_tracker;
 
+import android.graphics.Bitmap;
+
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -9,7 +11,16 @@ import com.google.android.gms.maps.model.LatLng;
 public class FriendBO {
     private String friend_name;
     private LatLng loc;
-    private int icon;
+
+    public Bitmap getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Bitmap icon) {
+        this.icon = icon;
+    }
+
+    private Bitmap icon;
 
     public String getFriend_name() {
         return friend_name;
@@ -19,13 +30,6 @@ public class FriendBO {
         this.friend_name = friend_name;
     }
 
-    public int getIcon() {
-        return icon;
-    }
-
-    public void setIcon(int icon) {
-        this.icon = icon;
-    }
 
     public LatLng getLoc() {
         return loc;
@@ -40,10 +44,10 @@ public class FriendBO {
         return loc.latitude+","+loc.longitude;
     }
 
-    public FriendBO(String friend_name, int icon, LatLng loc) {
-        this.loc = loc;
-        this.icon = icon;
-        this.friend_name= friend_name;
+    public FriendBO() {
+        //this.loc = loc;
+        //this.icon = icon;
+        //this.friend_name= friend_name;
 
     }
 
@@ -52,4 +56,3 @@ public class FriendBO {
 
 
 }
-

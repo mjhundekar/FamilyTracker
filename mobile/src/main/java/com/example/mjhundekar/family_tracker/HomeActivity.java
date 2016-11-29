@@ -117,7 +117,7 @@ public class HomeActivity extends AppCompatActivity
     TypedArray menuIcons;
     String[] friend_address;
     static List<FriendBO> friends;
-    List<String> friends_fb = new ArrayList<>();
+    static List<String> friends_fb = new ArrayList<>();
     Marker UserMarker;
     static Location updated_location;
     protected static final String TAG = "HomeActivity";
@@ -136,7 +136,9 @@ public class HomeActivity extends AppCompatActivity
     static String uid;
     HashMap<String,Marker> MarkerMap = new HashMap<>();
     HashMap<String,LatLng> LocationMap = new HashMap<>();
-    HashMap<String,Bitmap> ImageMap = new HashMap<>();
+    static HashMap<String,Bitmap> ImageMap = new HashMap<>();
+    static List<String> friends_email = new ArrayList<>();
+
 
     //ArrayList<Marker> markerList;
 
@@ -264,37 +266,41 @@ public class HomeActivity extends AppCompatActivity
         menuIcons = getResources().obtainTypedArray(R.array.icons);
         friend_address = getResources().getStringArray(R.array.friend_addresses);
         friends = new ArrayList<FriendBO>();
-        for (int i = 0; i < friend_name.length; i++) {
+        /*for (int i = 0; i < friend_name.length; i++) {
             String[] location = friend_address[i].split(",");
             FriendBO items = new FriendBO(friend_name[i], menuIcons.getResourceId(
                     i, -1), new LatLng(Double.parseDouble(location[0]), Double.parseDouble(location[1])));
 
             friends.add(items);
         }
-
+        */
         //String friends = mdatabase.getKey();
         mdatabase.child("friends").child(uid).orderByChild(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //System.out.println("Saifalikaredia "+dataSnapshot.toString());
+                System.out.println("Children in home 1");
                 for (DataSnapshot task : dataSnapshot.getChildren()) {
 
-                    String friendvalue = (String) task.getValue();
+                    String friendemail = (String) task.getValue();
+                    friends_email.add(friendemail);
                     //System.out.println("Saifalikaredia "+friendvalue);
-                    mdatabase.child("users").orderByChild("email").equalTo(friendvalue).addListenerForSingleValueEvent(new ValueEventListener() {
+                    mdatabase.child("users").orderByChild("email").equalTo(friendemail).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             //System.out.println("Saifalikaredia "+dataSnapshot.toString());
+                            System.out.println("Children in home 2");
                             for (DataSnapshot task : dataSnapshot.getChildren()) {
 
                                 HashMap<String,Object> friendDetails = (HashMap<String, Object>) task.getValue();
                                 //System.out.println("Saifalikaredia "+friendDetails.get("username"));
                                 HashMap<String,Object> loc = (HashMap<String, Object>) friendDetails.get("location");
                                 String friend_name_fb = friendDetails.get("username").toString();
-                                if(friend_name_fb!=null) {
+                                if(friend_name_fb!=null && !friends_fb.contains(friend_name_fb)) {
                                     friends_fb.add(friend_name_fb);
-                                    new DownloadImageFriend(friend_name_fb).execute(friendDetails.get("photoUrl").toString());
 
+                                    //System.out.println("Friends "+ friends_fb.toString());
+                                    new DownloadImageFriend(friend_name_fb).execute(friendDetails.get("photoUrl").toString());
+                                        System.out.println("norealtime "+loc.get("latitude"));
                                         MarkerOptions markerOptions = new MarkerOptions()
                                                 .position(new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")))
                                                 .title(friend_name_fb);
@@ -327,7 +333,78 @@ public class HomeActivity extends AppCompatActivity
 
             }
         });
+        mdatabase.child("friends").child(uid).addChildEventListener(new ChildEventListener() {
 
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                    String friendvalue = (String) dataSnapshot.getValue();
+                    System.out.println("Saifalikaredia--> 1"+friendvalue);
+                    mdatabase.child("users").orderByChild("email").equalTo(friendvalue).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //System.out.println("Saifalikaredia "+dataSnapshot.toString());
+                            System.out.println("Saifalikaredia---> 2"+ dataSnapshot.toString());
+
+                            for (DataSnapshot task : dataSnapshot.getChildren()) {
+
+                                HashMap<String,Object> friendDetails = (HashMap<String, Object>) task.getValue();
+                                //System.out.println("Saifalikaredia "+friendDetails.get("username"));
+                                HashMap<String,Object> loc = (HashMap<String, Object>) friendDetails.get("location");
+                                String friend_name_fb = friendDetails.get("username").toString();
+                                if(friend_name_fb!=null && !friends_fb.contains(friend_name_fb)) {
+                                    friends_fb.add(friend_name_fb);
+                                    System.out.println("Saifalikaredia---> 3 EXCEPTION"+ friend_name_fb);
+                                    //System.out.println("Friends "+ friends_fb.toString());
+                                    new DownloadImageFriend(friend_name_fb).execute(friendDetails.get("photoUrl").toString());
+
+                                    MarkerOptions markerOptions = new MarkerOptions()
+                                            .position(new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")))
+                                            .title(friend_name_fb);
+
+                                    if(ImageMap.containsKey(friend_name_fb))
+                                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(ImageMap.get(friend_name_fb)));
+                                    Marker marker = mMap.addMarker(markerOptions);
+                                    MarkerMap.put(friend_name_fb,marker);
+
+                                }
+                                //System.out.println("Saifalikaredia " + loc.get("latitude"));
+
+                                //String friendvalue = (String) task.getValue();
+                                //System.out.println("Saifalikaredia "+friendvalue);
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                System.out.println("Children I want this 2");
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
         // Kick off the request to build GoogleApiClient.
@@ -638,17 +715,18 @@ public class HomeActivity extends AppCompatActivity
         mdatabase.child("users").orderByChild("location").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
+                System.out.println("Children in home 3");
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
+                System.out.println("Children in home 4");
                 HashMap<String,Object> friendsLocation = (HashMap<String, Object>) dataSnapshot.getValue();
-                System.out.println("Saifalikaredia " + friendsLocation.get("username"));
+                //System.out.println("Saifalikaredia " + friendsLocation.get("username"));
                 String friends_ans = friendsLocation.get("username").toString();
                 HashMap<String,Object> loc = (HashMap<String, Object>) friendsLocation.get("location");
-                System.out.println("Saifalikaredia " + loc.get("latitude"));
+                //System.out.println("Saifalikaredia " + loc.get("latitude"));
                 LocationMap.put(friends_ans,new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")));
 
 
@@ -676,7 +754,7 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                System.out.println("Children in home 5");
             }
 
             @Override
