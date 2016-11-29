@@ -62,7 +62,7 @@ public class MyAdapter extends BaseAdapter {
 
         FriendBO row_pos = friendBO.get(position);
         // setting the image resource and title
-        imgIcon.setImageResource(row_pos.getIcon());
+        imgIcon.setImageBitmap(row_pos.getIcon());
         friend_name.setText(row_pos.getFriend_name());
 
         ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(context,row_pos.toString().split(",")[0],row_pos.toString().split(",")[1]);

@@ -53,6 +53,7 @@ public class AddFriends extends Activity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 String friendKey = "";
+                                //System.out.println("Children in home 6");
                                 HashMap<String,Object> friendDetails = (HashMap<String, Object>) dataSnapshot.getValue();
 
                                 for (DataSnapshot task : dataSnapshot.getChildren()) {
