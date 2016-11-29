@@ -68,7 +68,8 @@
 
         <activity android:name=".GroupsActivity" />
         <activity android:name=".EditGroupActivity" />
-        <activity android:name=".AddFriends"></activity>
+        <activity android:name=".AddFriends" />
+        <activity android:name=".HelpActivity"></activity>
     </application>
 
 </manifest>

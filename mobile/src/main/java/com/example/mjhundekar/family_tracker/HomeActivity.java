@@ -4,6 +4,7 @@ import android.*;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,11 +39,13 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -89,6 +92,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -137,6 +141,10 @@ public class HomeActivity extends AppCompatActivity
     HashMap<String,Marker> MarkerMap = new HashMap<>();
     HashMap<String,LatLng> LocationMap = new HashMap<>();
     HashMap<String,Bitmap> ImageMap = new HashMap<>();
+    private int mHour, mMinute;
+    Dialog dialog_set_time;
+    EditText start_time;
+    EditText end_time;
 
     //ArrayList<Marker> markerList;
 
@@ -333,6 +341,16 @@ public class HomeActivity extends AppCompatActivity
         // Kick off the request to build GoogleApiClient.
 
         Toast.makeText(this, mGoogleApiClient.isConnected() + "", Toast.LENGTH_LONG).show();
+
+        // Get Current Time
+        dialog_set_time = new Dialog(HomeActivity.this);
+        // Include dialog.xml file
+        dialog_set_time.setContentView(R.layout.time_setter_dialog);
+        // Set dialog title
+        dialog_set_time.setTitle("Set_Time");
+        start_time = (EditText) dialog_set_time.findViewById(R.id.show_start_time);
+        end_time = (EditText) dialog_set_time.findViewById(R.id.show_end_time);
+        System.out.println("Junaid"+start_time);
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -351,6 +369,7 @@ public class HomeActivity extends AppCompatActivity
         } else {
             buildGoogleApiClient();
         }
+
 
     }
 
@@ -536,6 +555,11 @@ public class HomeActivity extends AppCompatActivity
             }
         } else if (id == R.id.add_friends) {
             Intent intent = new Intent(HomeActivity.this, AddFriends.class);
+            startActivity(intent);
+        }
+
+        else if (id == R.id.request_help) {
+            Intent intent = new Intent(HomeActivity.this, HelpActivity.class);
             startActivity(intent);
         }
 
@@ -820,6 +844,44 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    public void select_start_time(View view) {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+
+                        start_time.setText(hourOfDay + ":" + minute);
+                        System.out.println("Time:" + hourOfDay + minute);
+
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+
+    }
+
+    public void select_end_time(View view) {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+
+                        end_time.setText(hourOfDay + ":" + minute);
+                        System.out.println("Time:" + hourOfDay + minute);
+
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+    }
+
+    public void Ok(View view) {
+        AddGeofenceMarker();
+        dialog_set_time.dismiss();
+    }
+
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
@@ -1075,6 +1137,7 @@ public class HomeActivity extends AppCompatActivity
 
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        setTime_geofence();
                         seeker = (SeekBar) findViewById(R.id.seekBar);
                         seeker.setVisibility(View.VISIBLE);
                         seeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -1098,7 +1161,16 @@ public class HomeActivity extends AppCompatActivity
 
                             }
                         });
-                        AddGeofenceMarker();
+
+
+                    }
+
+                    private void setTime_geofence() {
+
+                        // set values for custom dialog components - text, image and button
+                        dialog_set_time.show();
+
+
 
                     }
                 });
