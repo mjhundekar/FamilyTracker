@@ -82,7 +82,7 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getListView().setBackgroundColor(Color.WHITE);
+        //getListView().setBackgroundColor(Color.WHITE);
         return inflater.inflate(R.layout.fragment_location,null, false);
 
     }

@@ -1,7 +1,9 @@
 package com.example.mjhundekar.family_tracker;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +15,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -49,7 +54,6 @@ public class AddFriends extends Activity {
                 friend_email = get_email_id.getText().toString().toLowerCase();
                 FirebaseDatabase.getInstance().getReference().child("users").orderByChild("email").equalTo(friend_email)
                         .addListenerForSingleValueEvent(new ValueEventListener() {
-
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 String friendKey = "";
@@ -66,6 +70,7 @@ public class AddFriends extends Activity {
                                 myDetails.put(HomeActivity.uid,HomeActivity.email);
                                 FirebaseDatabase.getInstance().getReference().child("friends").child(HomeActivity.uid).updateChildren(friendDetails);
                                 FirebaseDatabase.getInstance().getReference().child("friends").child(friendKey).updateChildren(myDetails);
+
                             }
 
                             @Override

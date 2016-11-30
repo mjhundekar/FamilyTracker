@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,8 +47,7 @@ import okhttp3.Response;
  */
 public class GeofenceTransitionsIntentService extends IntentService {
 
-    public static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
-    OkHttpClient mClient = new OkHttpClient();
+
     protected static final String TAG = "GeofenceTransitionsIS";
 
     /**
@@ -180,9 +182,18 @@ public class GeofenceTransitionsIntentService extends IntentService {
      * @param transitionType    A transition type constant defined in Geofence
      * @return                  A String indicating the type of transition
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private String getTransitionString(int transitionType) {
         switch (transitionType) {
             case Geofence.GEOFENCE_TRANSITION_ENTER:
+                GeofenceTransitionsIntentService g = new GeofenceTransitionsIntentService();
+                String arr[]={"envx9MD_ocg:APA91bE1_pjX1GtRPgOAGwXRcPwTmFoEvZGLwdBMdlt7EdjFtez28E0JIaRdAjtkO3VMVrB1Og4TvdGaytQHFTmUrI0gkVfhIHmX-HzKVWEdPWAmBog2ZV7Xpv9SUzzHv_YDlwto1PiY"};
+                try {
+                    JSONArray regArray = new JSONArray(arr);
+                    g.sendMessage(regArray,"Family_Tracker","Entered the Geofence area","123","Saif !!!");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 return getString(R.string.geofence_transition_entered);
             case Geofence.GEOFENCE_TRANSITION_EXIT:
                 return getString(R.string.geofence_transition_exited);
@@ -192,7 +203,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
     }
 
     public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
-
+        System.out.println("pushnoti entered");
         new AsyncTask<String, String, String>() {
             @Override
             protected String doInBackground(String... params) {
@@ -201,13 +212,13 @@ public class GeofenceTransitionsIntentService extends IntentService {
                     JSONObject notification = new JSONObject();
                     notification.put("body", body);
                     notification.put("title", title);
-                    notification.put("icon", icon);
+                    //notification.put("icon", icon);
 
-                    JSONObject data = new JSONObject();
-                    data.put("message", message);
+                    //JSONObject data = new JSONObject();
+                    //data.put("message", message);
                     root.put("notification", notification);
-                    root.put("data", data);
-                    root.put("registration_ids", recipients);
+                    //root.put("data", data);
+                    root.put("to", recipients.get(0));
 
                     String result = postToFCM(root.toString());
                     Log.d(TAG, "Result: " + result);
@@ -235,6 +246,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
     }
 
     String postToFCM(String bodyString) throws IOException {
+        final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+        OkHttpClient mClient = new OkHttpClient();
         String Server_key = "AIzaSyDmWPq6Wz3kn96dnvE_8PWNti1YMn-rHYE";
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(JSON, bodyString);
@@ -242,8 +255,10 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 .url(FCM_MESSAGE_URL)
                 .post(body)
                 .addHeader("Authorization", "key=" + Server_key)
+                .addHeader("Content-Type","application/json")
                 .build();
         Response response = mClient.newCall(request).execute();
         return response.body().string();
     }
+
 }
