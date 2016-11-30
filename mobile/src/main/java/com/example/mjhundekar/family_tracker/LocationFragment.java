@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static android.R.attr.fragment;
 import static android.content.Context.TELEPHONY_SERVICE;
 
 
@@ -81,8 +82,9 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        getListView().setBackgroundColor(Color.WHITE);
+        return inflater.inflate(R.layout.fragment_location,null, false);
 
-        return inflater.inflate(R.layout.fragment_location, null, false);
     }
 
     @Override

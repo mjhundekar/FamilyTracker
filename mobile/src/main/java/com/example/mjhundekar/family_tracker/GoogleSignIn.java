@@ -29,10 +29,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.HashMap;
 
 /**
@@ -57,7 +61,11 @@ public class GoogleSignIn extends LoginActivity implements
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
+
+    String refreshedToken;
+
     private String refreshedTOken;
+
 
 
 
@@ -112,6 +120,11 @@ public class GoogleSignIn extends LoginActivity implements
                 // [END_EXCLUDE]
             }
         };
+
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d(TAG, "Refreshed token: " + refreshedToken);
+
+
         // [END auth_state_listener]
     }
 
@@ -260,8 +273,52 @@ public class GoogleSignIn extends LoginActivity implements
         userDetails.put("username",displayName);
         userDetails.put("email",email);
         userDetails.put("location",new LatLng(0.0,0.0));
+        userDetails.put("Token", refreshedToken);
         mdatabase.child("users").child(mAuth.getCurrentUser().getUid().toString()).setValue(userDetails);
+        sendnotification();
     }
+
+    private void sendnotification() {
+        FirebaseDatabase.getInstance().getReference().child("friends").child(mAuth.getCurrentUser().getUid().toString())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Log.v("Friend_list", dataSnapshot.toString());
+
+                        //DataSnap will loop for getting the token id of each friends
+                        //for
+                        FirebaseDatabase.getInstance().getReference().child("users").child(mAuth.getCurrentUser().getUid().toString())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        String user_token;
+                                        for (DataSnapshot task : dataSnapshot.getChildren()) {
+                                            if(task.getKey().toString() == "Token")
+                                            {
+                                                user_token = task.getValue().toString();
+                                                System.out.println("Alla re token" + user_token);
+                                            }
+                                            //Log.v("Token_",task.toString());
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
