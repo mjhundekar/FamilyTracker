@@ -35,8 +35,8 @@ public class ConvertFromLocationToAddress {
                 for(int i=0; i<returnedAddress.getMaxAddressLineIndex(); i++) {
                     strReturnedAddress.append(returnedAddress.getAddressLine(i)).append(",");
                 }
-                strReturnedAddress.append(returnedAddress.getCountryName());
-                address = strReturnedAddress.toString();
+
+                address = strReturnedAddress.substring(0, strReturnedAddress.length() - 1);
             }
             else{
                 address = "No Address";

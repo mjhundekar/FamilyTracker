@@ -66,11 +66,10 @@
 
         <service android:name=".GeofenceTransitionsIntentService" />
 
-
         <activity android:name=".GroupsActivity" />
         <activity android:name=".EditGroupActivity" />
         <activity android:name=".AddFriends" />
-        <activity android:name=".HelpActivity"></activity>
+        <activity android:name=".HelpActivity" />
     </application>
 
 </manifest>

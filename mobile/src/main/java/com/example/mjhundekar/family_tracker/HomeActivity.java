@@ -757,7 +757,8 @@ public class HomeActivity extends AppCompatActivity
                 String friends_ans = friendsLocation.get("username").toString();
                 HashMap<String,Object> loc = (HashMap<String, Object>) friendsLocation.get("location");
                 //System.out.println("Saifalikaredia " + loc.get("latitude"));
-                LocationMap.put(friends_ans,new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")));
+                if((double)loc.get("latitude")!=0 && (double)loc.get("latitude")!=0)
+                    LocationMap.put(friends_ans,new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")));
 
 
                 if(friends_fb.contains(friends_ans)){
@@ -1009,7 +1010,7 @@ public class HomeActivity extends AppCompatActivity
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
-                resizedBitmap1 = Bitmap.createScaledBitmap(mIcon11, 100, 100, false);
+                resizedBitmap1 = Bitmap.createScaledBitmap(mIcon11, 150, 150, false);
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
