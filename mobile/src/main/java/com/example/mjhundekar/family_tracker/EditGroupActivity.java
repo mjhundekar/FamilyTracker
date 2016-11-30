@@ -116,9 +116,9 @@ public class EditGroupActivity extends Activity implements OnItemClickListener{
                                 android.R.layout.select_dialog_singlechoice);
                         System.out.println("----> friends list");
                         ArrayList<String> friends_list = new ArrayList<String>();
-                        for(int j = 0; j< HomeActivity.friends.size();j++){
-                                friends_list.add(HomeActivity.friends.get(j).getFriend_name());
-                                System.out.println(HomeActivity.friends.get(j).getFriend_name());
+                        for(int j = 0; j< HomeActivity.friends_fb.size();j++){
+                                friends_list.add(HomeActivity.friends_fb.get(j));
+                                System.out.println(HomeActivity.friends_fb.get(j));
                         }
 
                         for(int k = 0 ; k< GroupsActivity.group_items.size();k++) {

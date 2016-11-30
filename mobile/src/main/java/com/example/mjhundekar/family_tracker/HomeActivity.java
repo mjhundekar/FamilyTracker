@@ -129,7 +129,7 @@ public class HomeActivity extends AppCompatActivity
     String group_name = "ALL";
     double dragLat;
     double dragLong;
-    Bitmap resizedBitmap;
+    static Bitmap resizedBitmap;
     Circle c1 = null;
     boolean add_more_geofence_restrictor = false;
     private SeekBar seeker;
@@ -720,9 +720,9 @@ public class HomeActivity extends AppCompatActivity
             updatedlocation.put("location",new LatLng(location.getLatitude(),location.getLongitude()));
             //updatedlocation.put("Token",)
             mdatabase.child("users").child(uid).updateChildren(updatedlocation);
-            if (UserMarker != null) {
-                UserMarker.remove();
-            }
+            //if (UserMarker != null) {
+            //    UserMarker.remove();
+            //}
             //Log.v("in Location","in location");
             ConvertFromLocationToAddress convert = new ConvertFromLocationToAddress(HomeActivity.this, location.getLatitude() + "", location.getLongitude() + "");
             String address = convert.getAddress();
@@ -730,6 +730,7 @@ public class HomeActivity extends AppCompatActivity
 
             UserMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("ME")
                     .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap)));
+            LocationMap.put(user_name,new LatLng(location.getLatitude(), location.getLongitude()));
 
             if (mMap != null && flag) {
                 flag = false;
@@ -763,14 +764,15 @@ public class HomeActivity extends AppCompatActivity
 
                 if(friends_fb.contains(friends_ans)){
                     if(MarkerMap.get(friends_ans)!=null){
-                        MarkerMap.get(friends_ans).remove();
-                        MarkerOptions markerOptions = new MarkerOptions()
-                                .position(LocationMap.get(friends_ans))
-                                .title(friends_ans);
+                        Marker m = MarkerMap.get(friends_ans);
+                        //MarkerOptions markerOptions = new MarkerOptions()
+                        //        .position(LocationMap.get(friends_ans))
+                        //        .title(friends_ans);
+                        m.setPosition(LocationMap.get(friends_ans));
                         if(ImageMap.containsKey(friends_ans))
-                            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(ImageMap.get(friends_ans)));
-                        Marker marker = mMap.addMarker(markerOptions);
-                        MarkerMap.put(friends_ans,marker);
+                            m.setIcon(BitmapDescriptorFactory.fromBitmap(ImageMap.get(friends_ans)));
+                        //Marker marker = mMap.addMarker(markerOptions);
+                        //MarkerMap.put(friends_ans,marker);
                     }
 
                 }
@@ -982,7 +984,8 @@ public class HomeActivity extends AppCompatActivity
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
-                resizedBitmap = Bitmap.createScaledBitmap(mIcon11, 100, 100, false);
+                resizedBitmap = Bitmap.createScaledBitmap(mIcon11, 150, 150, false);
+
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -1064,19 +1067,20 @@ public class HomeActivity extends AppCompatActivity
 
 
     private void ShowGroupDetails() {
-        mMap.clear();
+        //mMap.clear();
         //markerList.clear();
 
         if (group_name.equals("ALL")) {
-            for (int j = 0; j < friends.size(); j++) {
-
-                LatLng loc = friends.get(j).getLoc();
+            for (int j = 0; j < friends_fb.size(); j++) {
+                System.out.println("Testgroup in all ");
+                MarkerMap.get(friends_fb.get(j)).setVisible(true);
+                //LatLng loc = friends.get(j).getLoc();
                 //userBO.setLoc(loc);
-                Log.v("Inside", friends.get(j).toString());
-                MarkerOptions markerOptions = new MarkerOptions()
-                        .position(new LatLng(loc.latitude, loc.longitude))
-                        .title("Fake");
-                Marker marker = mMap.addMarker(markerOptions);
+                //Log.v("Inside", friends.get(j).toString());
+                //MarkerOptions markerOptions = new MarkerOptions()
+                //        .position(new LatLng(loc.latitude, loc.longitude))
+                //        .title("Fake");
+                //Marker marker = mMap.addMarker(markerOptions);
                 //markerList.add(marker);
 
             }
@@ -1087,8 +1091,17 @@ public class HomeActivity extends AppCompatActivity
             HashSet<String> set;
             for (int i = 0; i < GroupsActivity.group_details.size(); i++) {
                 GroupBO groupBO = GroupsActivity.group_details.get(i);
-                if (groupBO.getGroup_name().equals(group_name)) {
-                    for (int j = 0; j < friends.size(); j++) {
+                if (!groupBO.getGroup_name().equals(group_name) && groupBO.getMember_name()!=user_name ) {
+                    for (int j = 0; j < friends_fb.size(); j++) {
+                        System.out.println("Testgroup in all ");
+                        MarkerMap.get(friends_fb.get(j)).setVisible(true);
+
+                    }
+                    String member_in_group = groupBO.getMember_name();
+
+                    MarkerMap.get(member_in_group).setVisible(false);
+
+                    /*for (int j = 0; j < friends.size(); j++) {
                         if (groupBO.getMember_name().equals(friends.get(j).getFriend_name())) {
                             LatLng loc = friends.get(j).getLoc();
                             //userBO.setLoc(loc);
@@ -1099,7 +1112,7 @@ public class HomeActivity extends AppCompatActivity
                             Marker marker = mMap.addMarker(markerOptions);
                             //markerList.add(marker);
                         }
-                    }
+                    }*/
                 }
             }
         }

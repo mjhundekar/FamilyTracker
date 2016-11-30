@@ -249,7 +249,7 @@ public class GoogleSignIn extends LoginActivity implements
 
             Intent intent1 = new Intent(GoogleSignIn.this, HomeActivity.class);
             intent1.putExtra("email", user.getEmail());
-            intent1.putExtra("name",user.getDisplayName().toUpperCase());
+            intent1.putExtra("name",user.getDisplayName());
             intent1.putExtra("photo",String.valueOf(user.getPhotoUrl()));
             intent1.putExtra("uid",user.getUid());
             //intent
