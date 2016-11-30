@@ -72,6 +72,7 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
     private DatabaseReference mdatabase =FirebaseDatabase.getInstance().getReference();
     ArrayList<String> friends_fb = new ArrayList<>();
     HashMap<String,FriendBO> mapFriendBO = new HashMap<>();
+    ArrayList<String> friends_email = new ArrayList<>();
 
 
     public LocationFragment(){
@@ -96,6 +97,7 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
                 for (DataSnapshot task : dataSnapshot.getChildren()) {
 
                     String friendvalue = (String) task.getValue();
+                    friends_email.add(friendvalue);
                     mdatabase.child("users").orderByChild("email").equalTo(friendvalue).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -109,7 +111,8 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
                                 if(friend_name_fb!=null) {
                                     FriendBO BO = new FriendBO();
                                     BO.setFriend_name(friend_name_fb);
-                                    BO.setLoc(new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")));
+                                    if((double)loc.get("latitude")!=0.0 && (double)loc.get("latitude")!=0.0)
+                                        BO.setLoc(new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")));
                                     //System.out.println("Friends "+ friends_fb.toString());
                                     new DownloadImageFriend(friend_name_fb,BO).execute(friendDetails.get("photoUrl").toString());
                                     friends.add(BO);
@@ -169,6 +172,68 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
                     adapter = new MyAdapter(getActivity(), friends);
                     setListAdapter(adapter);
                 }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        mdatabase.child("friends").child(HomeActivity.uid).addChildEventListener(new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                String friendvalue = (String) dataSnapshot.getValue();
+                friends_email.add(friendvalue);
+
+                mdatabase.child("users").orderByChild("email").equalTo(friendvalue).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //System.out.println("Saifalikaredia "+dataSnapshot.toString());
+
+                        for (DataSnapshot task : dataSnapshot.getChildren()) {
+
+                            HashMap<String,Object> friendDetails = (HashMap<String, Object>) task.getValue();
+                            //System.out.println("Saifalikaredia "+friendDetails.get("username"));
+                            HashMap<String,Object> loc = (HashMap<String, Object>) friendDetails.get("location");
+                            String friend_name_fb = friendDetails.get("username").toString();
+                            if(friend_name_fb!=null&& !mapFriendBO.containsKey(friend_name_fb)) {
+                                FriendBO BO = new FriendBO();
+                                BO.setFriend_name(friend_name_fb);
+                                BO.setLoc(new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")));
+                                //System.out.println("Friends "+ friends_fb.toString());
+                                new DownloadImageFriend(friend_name_fb,BO).execute(friendDetails.get("photoUrl").toString());
+                                friends.add(BO);
+                            }
+                        }
+
+                        adapter = new MyAdapter(getActivity(), friends);
+                        setListAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                System.out.println("Children I want this 2");
             }
 
             @Override

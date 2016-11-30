@@ -298,17 +298,21 @@ public class HomeActivity extends AppCompatActivity
                                 if(friend_name_fb!=null && !friends_fb.contains(friend_name_fb)) {
                                     friends_fb.add(friend_name_fb);
 
-                                    //System.out.println("Friends "+ friends_fb.toString());
-                                    new DownloadImageFriend(friend_name_fb).execute(friendDetails.get("photoUrl").toString());
-                                        System.out.println("norealtime "+loc.get("latitude"));
+                                        //System.out.println("Friends "+ friends_fb.toString());
+                                        new DownloadImageFriend(friend_name_fb).execute(friendDetails.get("photoUrl").toString());
+                                        System.out.println("norealtime " + loc.get("latitude"));
+                                        if((double)loc.get("latitude")!=0 && (double)loc.get("latitude")!=0){
                                         MarkerOptions markerOptions = new MarkerOptions()
-                                                .position(new LatLng((double)loc.get("latitude"),(double)loc.get("longitude")))
+                                                .position(new LatLng((double) (loc.get("latitude")), (double) loc.get("longitude")))
                                                 .title(friend_name_fb);
 
-                                        if(ImageMap.containsKey(friend_name_fb))
+                                        if (ImageMap.containsKey(friend_name_fb))
                                             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(ImageMap.get(friend_name_fb)));
                                         Marker marker = mMap.addMarker(markerOptions);
-                                        MarkerMap.put(friend_name_fb,marker);
+                                        MarkerMap.put(friend_name_fb, marker);
+
+                                    }
+
 
                                 }
                                 //System.out.println("Saifalikaredia " + loc.get("latitude"));
@@ -689,6 +693,7 @@ public class HomeActivity extends AppCompatActivity
             updated_location = location;
             HashMap<String,Object> updatedlocation = new HashMap<>();
             updatedlocation.put("location",new LatLng(location.getLatitude(),location.getLongitude()));
+            //updatedlocation.put("Token",)
             mdatabase.child("users").child(uid).updateChildren(updatedlocation);
             if (UserMarker != null) {
                 UserMarker.remove();

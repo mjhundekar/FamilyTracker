@@ -36,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.HashMap;
 
 /**
@@ -60,7 +61,11 @@ public class GoogleSignIn extends LoginActivity implements
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
+
     String refreshedToken;
+
+    private String refreshedTOken;
+
 
 
 
@@ -71,7 +76,7 @@ public class GoogleSignIn extends LoginActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google);
         mdatabase = FirebaseDatabase.getInstance().getReference();
-
+        refreshedTOken = FirebaseInstanceId.getInstance().getToken();
         // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
         //mDetailTextView = (TextView) findViewById(R.id.detail);
@@ -247,6 +252,7 @@ public class GoogleSignIn extends LoginActivity implements
             intent1.putExtra("name",user.getDisplayName().toUpperCase());
             intent1.putExtra("photo",String.valueOf(user.getPhotoUrl()));
             intent1.putExtra("uid",user.getUid());
+            //intent
             startActivity(intent1);
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
