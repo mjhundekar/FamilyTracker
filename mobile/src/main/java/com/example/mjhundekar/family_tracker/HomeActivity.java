@@ -137,6 +137,7 @@ public class HomeActivity extends AppCompatActivity
     double dragLat;
     double dragLong;
     static Bitmap resizedBitmap;
+    int abcd = 0;
     Circle c1 = null;
     boolean add_more_geofence_restrictor = false;
     private SeekBar seeker;
