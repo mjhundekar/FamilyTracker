@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:text="Add Friends"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+        <EditText
+            android:id="@+id/add_friends_text"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:hint=" Enter the email id"
+            android:layout_marginTop="10dp">
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/set_ok"
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:text="Add"
+            android:layout_marginBottom="20dp"
+            android:background="#c9fdff"
+            android:onClick="add_friends_button"
+            android:layout_marginTop="10dp">
+        </Button>
+
+        <Button
+            android:id="@+id/set_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Cancel"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#c9fdff"
+            android:layout_marginLeft="30dp"
+            android:onClick="Cancel_friends"
+            android:layout_marginTop="10dp">
+        </Button>
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>
