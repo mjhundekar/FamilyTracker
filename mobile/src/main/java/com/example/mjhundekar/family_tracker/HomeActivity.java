@@ -81,6 +81,7 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -97,7 +98,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
+import jsqlite.Database;
+//import jsqlite.Exception;
+import jsqlite.Stmt;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,GoogleMap.OnMyLocationButtonClickListener,
@@ -142,7 +145,7 @@ public class HomeActivity extends AppCompatActivity
     HashMap<String,LatLng> LocationMap = new HashMap<>();
     static HashMap<String,Bitmap> ImageMap = new HashMap<>();
     static List<String> friends_email = new ArrayList<>();
-
+    public Database db;
     private int mHour, mMinute;
     Dialog dialog_set_time;
     EditText start_time;
@@ -184,6 +187,27 @@ public class HomeActivity extends AppCompatActivity
 
         buildGoogleApiClient();
         mdatabase = FirebaseDatabase.getInstance().getReference();
+
+        //File sdcardDir = "/"; // your sdcard path
+        //File spatialDbFile = new File(sdcardDir, "italy.sqlite");
+        try {
+            File sdcardDir = HomeActivity.this.getFilesDir() ; // your sdcard path
+            File spatialDbFile = new File(sdcardDir, "italy.sqlite");
+            db = new Database();
+            db.open(spatialDbFile.getAbsolutePath(), jsqlite.Constants.SQLITE_OPEN_READWRITE
+                    | jsqlite.Constants.SQLITE_OPEN_CREATE);
+
+
+        } catch (jsqlite.Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String res = queryVersions();
+            Log.v("Database", res);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // Get the UI widgets.
         //mAddGeofencesButton = (Button) findViewById(R.id.add_geofences_button);
         //mRemoveGeofencesButton = (Button) findViewById(R.id.remove_geofences_button);
@@ -1326,6 +1350,38 @@ public class HomeActivity extends AppCompatActivity
                 return true;
             }
         });
+    }
+
+    public String queryVersions() throws Exception {
+        StringBuilder sb = new StringBuilder();
+        Log.v("Database" , "Check versions...\n");
+        sb.append("Check versions...\n");
+
+        Stmt stmt01 = db.prepare("SELECT spatialite_version();");
+        if (stmt01.step()) {
+            sb.append("\t").append("SPATIALITE_VERSION: " + stmt01.column_string(0));
+            sb.append("\n");
+            Log.v("Database", sb.toString());
+        }
+
+        stmt01 = db.prepare("SELECT proj4_version();");
+        if (stmt01.step()) {
+            sb.append("\t").append("PROJ4_VERSION: " + stmt01.column_string(0));
+            sb.append("\n");
+            Log.v("Database", sb.toString());
+        }
+
+        stmt01 = db.prepare("SELECT geos_version();");
+        if (stmt01.step()) {
+            sb.append("\t").append("GEOS_VERSION: " + stmt01.column_string(0));
+            sb.append("\n");
+            Log.v("Database", sb.toString());
+        }
+        stmt01.close();
+
+        sb.append("Done...\n");
+        Log.v("Database", sb.toString());
+        return sb.toString();
     }
 
 
