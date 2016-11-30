@@ -12,7 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="345dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/ic_background_image">
+
 
 
         <TextView
@@ -20,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/title_bottom_margin"
-            android:text="@string/google_title_text"
+            android:text="Family Tracker"
             android:theme="@style/ThemeOverlay.MyTitleText" />
 
         <TextView

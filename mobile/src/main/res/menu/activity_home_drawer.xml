@@ -35,6 +35,15 @@
                 android:title="Add Friends" />
         </menu>
     </item>
+
+    <item android:title="Request Help">
+        <menu>
+            <item
+                android:id="@+id/request_help"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Request Help" />
+        </menu>
+    </item>
     <group>
         <item
             android:id="@+id/logout"
