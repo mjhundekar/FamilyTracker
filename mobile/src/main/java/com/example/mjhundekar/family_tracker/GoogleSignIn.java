@@ -83,8 +83,8 @@ public class GoogleSignIn extends LoginActivity implements
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.disconnect_button).setOnClickListener(this);
+        //findViewById(R.id.sign_out_button).setOnClickListener(this);
+        //findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -331,12 +331,13 @@ public class GoogleSignIn extends LoginActivity implements
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.sign_in_button) {
+        if (i == R.id.sign_in_button)
             signIn();
-        } else if (i == R.id.sign_out_button) {
+        /*} else if (i == R.id.sign_out_button) {
             signOut();
         } else if (i == R.id.disconnect_button) {
             revokeAccess();
-        }
+        }*/
     }
 }
+

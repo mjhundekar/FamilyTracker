@@ -19,19 +19,21 @@
     android:layout_width="match_parent"
     android:layout_alignParentBottom="true"
     android:layout_height="match_parent"
-    android:background="@android:color/darker_gray"
+    android:background="#99bdd8"
     android:orientation="vertical" >
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:background="#80abcc"
         android:orientation="horizontal" >
         <ImageView
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="3dp"
             android:id="@+id/user_photo"
-            android:layout_width="75dp"
+            android:layout_width="48dp"
             android:layout_height="match_parent"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,7 +46,6 @@
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
-
                 android:text="Saif"/>
             <TextView
                 android:id="@+id/user_location"
@@ -62,7 +63,7 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent" >
     </ListView>
     <!--
     <ListView

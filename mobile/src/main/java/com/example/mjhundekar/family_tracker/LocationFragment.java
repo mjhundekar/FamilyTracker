@@ -82,7 +82,7 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getListView().setBackgroundColor(Color.WHITE);
+        //getListView().setBackgroundColor(Color.WHITE);
         return inflater.inflate(R.layout.fragment_location,null, false);
 
     }
@@ -325,7 +325,7 @@ public class LocationFragment extends ListFragment implements AdapterView.OnItem
             try {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
-                resizedBitmap1 = Bitmap.createScaledBitmap(mIcon11, 100, 100, false);
+                resizedBitmap1 = Bitmap.createScaledBitmap(mIcon11, 150, 150, false);
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();

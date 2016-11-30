@@ -29,11 +29,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.Response;*/
 
 /**
  * Listener for geofence transition changes.
@@ -45,7 +46,7 @@ import okhttp3.Response;
 public class GeofenceTransitionsIntentService extends IntentService {
 
     public static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
-    OkHttpClient mClient = new OkHttpClient();
+    //OkHttpClient mClient = new OkHttpClient();
     protected static final String TAG = "GeofenceTransitionsIS";
 
     /**
@@ -209,9 +210,9 @@ public class GeofenceTransitionsIntentService extends IntentService {
                     root.put("data", data);
                     root.put("registration_ids", recipients);
 
-                    String result = postToFCM(root.toString());
-                    Log.d(TAG, "Result: " + result);
-                    return result;
+                    //String result = postToFCM(root.toString());
+                    //Log.d(TAG, "Result: " + result);
+                    //return result;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -234,7 +235,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
         }.execute();
     }
 
-    String postToFCM(String bodyString) throws IOException {
+    /*String postToFCM(String bodyString) throws IOException {
         String Server_key = "AIzaSyDmWPq6Wz3kn96dnvE_8PWNti1YMn-rHYE";
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(JSON, bodyString);
@@ -246,4 +247,5 @@ public class GeofenceTransitionsIntentService extends IntentService {
         Response response = mClient.newCall(request).execute();
         return response.body().string();
     }
+    */
 }

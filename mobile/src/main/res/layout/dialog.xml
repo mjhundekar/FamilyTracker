@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/blah"
+        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Choose Action"
+        android:textColor="#314ad6"
         android:gravity="center"
-        android:textSize="20sp"
-        android:text="Choose action"/>
+        android:textSize="30sp"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
-        <Button
-            android:id="@+id/directionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Get Directions "
-            android:layout_marginTop="5dp">
-        </Button>
-        <Button
-            android:id="@+id/LocationButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Get Location"
-            android:layout_marginTop="5dp" />
-        <Button
-            android:id="@+id/MessageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Send Message"
-            android:layout_marginTop="5dp" />
-    </LinearLayout>
+    <Button android:id="@+id/LocationButton"
+        android:layout_width="250dp"
+        android:text="Get Location"
+        android:layout_below="@+id/blah"
+        android:background="#c9fdff"
+        android:layout_height="50dp"
+        android:drawableLeft="@drawable/location"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/directionButton"
+        android:layout_width="250dp"
+        android:text="Get Direction"
+        android:background="#c9fdff"
+        android:layout_height="50dp"
+        android:drawableLeft="@drawable/directions"
+        android:layout_below="@+id/LocationButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="21dp"
+        android:layout_marginBottom="20dp"/>
+
+</RelativeLayout>
