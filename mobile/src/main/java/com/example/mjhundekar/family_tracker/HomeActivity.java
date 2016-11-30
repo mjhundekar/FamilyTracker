@@ -5,8 +5,11 @@ import android.Manifest;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
@@ -25,7 +28,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -97,6 +102,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 public class HomeActivity extends AppCompatActivity
@@ -111,6 +117,7 @@ public class HomeActivity extends AppCompatActivity
      * {@link #onRequestPermissionsResult(int, String[], int[])}.
      */
     private boolean mPermissionDenied = false;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
     static String user_name = "";
     static GoogleMap mMap;
     int cccc = 0;
@@ -145,8 +152,11 @@ public class HomeActivity extends AppCompatActivity
 
     private int mHour, mMinute;
     Dialog dialog_set_time;
+    Dialog add_friends;
     EditText start_time;
     EditText end_time;
+
+    EditText add_friends_email;
 
 
     //ArrayList<Marker> markerList;
@@ -204,7 +214,6 @@ public class HomeActivity extends AppCompatActivity
 
         // Get the geofences used. Geofence data is hard coded in this sample.
 
-
         location_fragment = ((LocationFragment) getSupportFragmentManager().findFragmentById(R.id.location_fragment));
         Bundle bundle = getIntent().getExtras();
 
@@ -255,6 +264,8 @@ public class HomeActivity extends AppCompatActivity
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                add_friends.show();
+
             }
         });
 
@@ -433,7 +444,16 @@ public class HomeActivity extends AppCompatActivity
         start_time = (EditText) dialog_set_time.findViewById(R.id.show_start_time);
         end_time = (EditText) dialog_set_time.findViewById(R.id.show_end_time);
         System.out.println("Junaid"+start_time);
+
+        //Add Friends
+        add_friends = new Dialog(HomeActivity.this);
+        add_friends.setContentView(R.layout.add_friends_dialog);
+        add_friends.setTitle("Add Time");
+        add_friends_email = (EditText) add_friends.findViewById(R.id.add_friends_text);
+
     }
+
+
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -453,9 +473,8 @@ public class HomeActivity extends AppCompatActivity
         }
 
 
+
     }
-
-
     /*
     private void setButtonsEnabledState() {
         if (mGeofencesAdded) {
@@ -967,6 +986,15 @@ public class HomeActivity extends AppCompatActivity
         dialog_set_time.dismiss();
     }
 
+    public void add_friends_button(View view) {
+        Friends_to_add f = new Friends_to_add();
+        f.add_friend(add_friends_email.getText().toString());
+    }
+
+    public void Cancel_friends(View view) {
+        add_friends.dismiss();
+    }
+
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
@@ -1328,6 +1356,5 @@ public class HomeActivity extends AppCompatActivity
             }
         });
     }
-
 
 }
