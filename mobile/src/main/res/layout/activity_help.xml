@@ -48,18 +48,22 @@
 
         <ImageView
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:src="@drawable/message"
+            android:layout_height="80dp"
+            android:layout_marginLeft="20dp"
             android:id="@+id/first_neighbor_picture"/>
 
         <ImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:layout_marginLeft="66dp"
+            android:layout_marginLeft="35dp"
+            android:src="@drawable/message"
             android:id="@+id/second_neighbor_picture"/>
 
         <ImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
+            android:src="@drawable/message"
             android:layout_marginLeft="35dp"
             android:id="@+id/third_neighbor_picture"/>
 

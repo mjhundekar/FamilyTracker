@@ -44,12 +44,12 @@ public class GroupsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
 
-        ArrayAdapter group_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, HomeActivity.friend_name);
+        ArrayAdapter group_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, HomeActivity.friends_fb);
         ListView listView = (ListView) findViewById(R.id.list_of_friends);
         listView.setAdapter(group_adapter);
 
         text1=(MultiAutoCompleteTextView)findViewById(R.id.multiAutoCompleteTextView1);
-        ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,HomeActivity.friend_name);
+        ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,HomeActivity.friends_fb);
         text1.setAdapter(adapter);
         text1.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -52,12 +53,18 @@ public class EntryAdapter extends ArrayAdapter<Item> {
                 v = vi.inflate(R.layout.edit_group_item, null);
                 final TextView title = (TextView)v.findViewById(R.id.list_item_entry_title);
                 final TextView subtitle = (TextView)v.findViewById(R.id.list_item_entry_summary);
+                final ImageView img = (ImageView)v.findViewById(R.id.list_item_entry_drawable);
 
-
+                System.out.println("GGGGGG "+ei.member_name);
                 if (title != null)
                     title.setText(ei.member_name);
                 if(subtitle != null)
                     subtitle.setText(ei.isAdmin);
+                if(img!=null)
+                    if(ei.member_name.equals("Me"))
+                        img.setImageBitmap(HomeActivity.resizedBitmap);
+                    else
+                        img.setImageBitmap(HomeActivity.ImageMap.get(ei.member_name));
             }
         }
         return v;

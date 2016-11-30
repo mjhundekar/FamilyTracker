@@ -12,7 +12,7 @@
         android:padding="8dp"
         android:text=""
         android:textAllCaps="true"
-        android:background="@android:color/darker_gray"
+        android:background="#88dce2"
         android:textColor="#FFF"
         android:textStyle="bold"
         android:visibility="visible" />
