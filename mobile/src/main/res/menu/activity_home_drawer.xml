@@ -27,6 +27,14 @@
                 android:title="Create Geofence" />
         </menu>
     </item>
+    <item android:title="Add Friends">
+        <menu>
+            <item
+                android:id="@+id/add_friends"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Add Friends" />
+        </menu>
+    </item>
     <group>
         <item
             android:id="@+id/logout"
