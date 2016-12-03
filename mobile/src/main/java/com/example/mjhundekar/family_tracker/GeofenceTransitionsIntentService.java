@@ -69,6 +69,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
      * @param intent sent by Location Services. This Intent is provided to Location
      *               Services (inside a PendingIntent) when addGeofences() is called.
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onHandleIntent(Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
@@ -113,6 +114,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
      * @param triggeringGeofences   The geofence(s) triggered.
      * @return                      The transition details formatted as String.
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private String getGeofenceTransitionDetails(
             Context context,
             int geofenceTransition,
@@ -186,14 +188,14 @@ public class GeofenceTransitionsIntentService extends IntentService {
     private String getTransitionString(int transitionType) {
         switch (transitionType) {
             case Geofence.GEOFENCE_TRANSITION_ENTER:
-                GeofenceTransitionsIntentService g = new GeofenceTransitionsIntentService();
-                String arr[]={"envx9MD_ocg:APA91bE1_pjX1GtRPgOAGwXRcPwTmFoEvZGLwdBMdlt7EdjFtez28E0JIaRdAjtkO3VMVrB1Og4TvdGaytQHFTmUrI0gkVfhIHmX-HzKVWEdPWAmBog2ZV7Xpv9SUzzHv_YDlwto1PiY"};
-                try {
-                    JSONArray regArray = new JSONArray(arr);
-                    g.sendMessage(regArray,"Family_Tracker","Entered the Geofence area","123","Saif !!!");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                //GeofenceTransitionsIntentService g = new GeofenceTransitionsIntentService();
+                //String arr[]={"envx9MD_ocg:APA91bE1_pjX1GtRPgOAGwXRcPwTmFoEvZGLwdBMdlt7EdjFtez28E0JIaRdAjtkO3VMVrB1Og4TvdGaytQHFTmUrI0gkVfhIHmX-HzKVWEdPWAmBog2ZV7Xpv9SUzzHv_YDlwto1PiY"};
+                //try {
+                 //   JSONArray regArray = new JSONArray(arr);
+                //    g.sendMessage(regArray,"Family_Tracker","Entered the Geofence area","123","Saif !!!");
+                //} catch (JSONException e) {
+                //    e.printStackTrace();
+                //}
                 return getString(R.string.geofence_transition_entered);
             case Geofence.GEOFENCE_TRANSITION_EXIT:
                 return getString(R.string.geofence_transition_exited);
@@ -201,7 +203,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 return getString(R.string.unknown_geofence_transition);
         }
     }
-
+/*
     public void sendMessage(final JSONArray recipients, final String title, final String body, final String icon, final String message) {
         System.out.println("pushnoti entered");
         new AsyncTask<String, String, String>() {
@@ -259,6 +261,6 @@ public class GeofenceTransitionsIntentService extends IntentService {
         Response response = mClient.newCall(request).execute();
         return response.body().string();
     }
-
+*/
 
 }

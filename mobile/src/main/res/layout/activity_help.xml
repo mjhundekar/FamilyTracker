@@ -48,7 +48,7 @@
 
         <ImageView
             android:layout_width="75dp"
-            android:src="@drawable/message"
+            android:src="@drawable/saif"
             android:layout_height="80dp"
             android:layout_marginLeft="20dp"
             android:id="@+id/first_neighbor_picture"/>
@@ -57,13 +57,13 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_marginLeft="35dp"
-            android:src="@drawable/message"
+            android:src="@drawable/junaid"
             android:id="@+id/second_neighbor_picture"/>
 
         <ImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:src="@drawable/message"
+            android:src="@drawable/umang"
             android:layout_marginLeft="35dp"
             android:id="@+id/third_neighbor_picture"/>
 
@@ -79,21 +79,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/first_neighbor_name"
-            android:text="Saif" />
+            android:text="         Saifali                    Junaid                        Umang " />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="66dp"
-            android:id="@+id/second_neighbor_name"
-            android:text="Umang"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="35dp"
-            android:id="@+id/third_neighbor_name"
-            android:text="Junaid"/>
+
+
 
     </LinearLayout>
 
